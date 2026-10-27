@@ -27,7 +27,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | simplifier | ⬜ | – |
 | tangentspace | ✅ | 4/4 + diff-tested |
 | remesher | ⬜ | – |
-| opacitymap | ⬜ | – |
+| opacitymap | ✅ | 3/3 + diff-tested |
 | allocator (`setAllocator`, `setAllocatorCache`) | ❓ | needs `unsafe` for raw allocators |
 | u16 index adapters (C++ templates) | ⬜ | – |
 
