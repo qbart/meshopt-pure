@@ -1,6 +1,7 @@
 //! Pure Rust port of [meshoptimizer](https://github.com/zeux/meshoptimizer).
 #![deny(unsafe_code)]
 
+mod clusterizer;
 mod error;
 mod hash;
 mod index;
@@ -19,6 +20,7 @@ mod vertexcodec;
 mod vertexfilter;
 mod vfetchoptimizer;
 
+pub use clusterizer::*;
 pub use error::{Error, Result};
 pub use index::IndexType;
 pub use indexanalyzer::*;

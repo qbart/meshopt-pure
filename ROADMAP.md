@@ -20,7 +20,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | vertexcodec | ✅ | 19/19 + diff/fuzz-tested |
 | vertexfilter | ✅ | 15/15 + diff-tested |
 | spatialorder | ✅ | diff-tested + 2 sanity |
-| clusterizer | ⬜ | – |
+| clusterizer | ✅ | 6/7 (meshletsMax pending meshletutils) + diff-tested |
 | meshletutils | ⬜ | – |
 | meshletcodec | ⬜ | – |
 | partition | ⬜ | – |
