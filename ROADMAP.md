@@ -23,7 +23,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | clusterizer | ✅ | 7/7 + diff-tested |
 | meshletutils | ✅ | 3/3 + diff-tested |
 | meshletcodec | ⬜ | – |
-| partition | ⬜ | – |
+| partition | ✅ | 3/3 + diff-tested |
 | simplifier | ⬜ | – |
 | tangentspace | ⬜ | – |
 | remesher | ⬜ | – |
