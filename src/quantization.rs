@@ -110,3 +110,27 @@ pub fn compute_position_exponent(minv: &[f32; 3], maxv: &[f32; 3], min_exp: i32,
 
     Ok(exp)
 }
+
+/// Quantize a float in [0..1] range into an N-bit fixed point unorm value.
+/// Assumes reconstruction function (q / (2^N-1)); maximum reconstruction error: 1/2^(N+1).
+pub fn quantize_unorm(v: f32, n: i32) -> i32 {
+    let scale = 1i32.wrapping_shl(n as u32).wrapping_sub(1) as f32;
+
+    let v = if v >= 0.0 { v } else { 0.0 };
+    let v = if v <= 1.0 { v } else { 1.0 };
+
+    (v * scale + 0.5) as i32
+}
+
+/// Quantize a float in [-1..1] range into an N-bit fixed point snorm value.
+/// Assumes reconstruction function (q / (2^(N-1)-1)); maximum reconstruction error: 1/2^N.
+pub fn quantize_snorm(v: f32, n: i32) -> i32 {
+    let scale = 1i32.wrapping_shl(n.wrapping_sub(1) as u32).wrapping_sub(1) as f32;
+
+    let round = if v >= 0.0 { 0.5 } else { -0.5 };
+
+    let v = if v >= -1.0 { v } else { -1.0 };
+    let v = if v <= 1.0 { v } else { 1.0 };
+
+    (v * scale + round) as i32
+}

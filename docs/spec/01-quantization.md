@@ -10,3 +10,6 @@
 `frexpf`/`ldexpf` are reimplemented in `src/math.rs` (bit-exact, denormal aware).
 
 Tests: `quantizeFloat`, `quantizeHalf`, `dequantizeHalf`, `computePositionExponent` → `tests/quantization.rs`.
+
+Header inline helpers: `meshopt_quantizeUnorm` → `quantize_unorm(f32, i32) -> i32`, `meshopt_quantizeSnorm` → `quantize_snorm(f32, i32) -> i32`
+(infallible; shifts use `wrapping_*` so out-of-range `N` cannot panic).
