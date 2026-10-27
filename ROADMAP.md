@@ -17,7 +17,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | rasterizer (analyzeOverdraw/Coverage) | ✅ | diff-tested |
 | stripifier | ✅ | diff-tested + 1 sanity |
 | indexcodec | ✅ | 21/21 + diff/fuzz-tested |
-| vertexcodec | ⬜ | – |
+| vertexcodec | ✅ | 19/19 + diff/fuzz-tested |
 | vertexfilter | ⬜ | – |
 | spatialorder | ⬜ | – |
 | clusterizer | ⬜ | – |
