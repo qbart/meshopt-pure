@@ -15,6 +15,7 @@ mod stripifier;
 mod validate;
 mod vcacheoptimizer;
 mod vertexcodec;
+mod vertexfilter;
 mod vfetchoptimizer;
 
 pub use error::{Error, Result};
@@ -28,4 +29,5 @@ pub use rasterizer::*;
 pub use stripifier::*;
 pub use vcacheoptimizer::*;
 pub use vertexcodec::*;
+pub use vertexfilter::*;
 pub use vfetchoptimizer::*;

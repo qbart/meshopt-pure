@@ -18,7 +18,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | stripifier | ✅ | diff-tested + 1 sanity |
 | indexcodec | ✅ | 21/21 + diff/fuzz-tested |
 | vertexcodec | ✅ | 19/19 + diff/fuzz-tested |
-| vertexfilter | ⬜ | – |
+| vertexfilter | ✅ | 15/15 + diff-tested |
 | spatialorder | ⬜ | – |
 | clusterizer | ⬜ | – |
 | meshletutils | ⬜ | – |
