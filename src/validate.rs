@@ -28,7 +28,6 @@ pub(crate) fn bytes(data: &[u8], count: usize, size: usize, stride: usize) -> Re
     ensure(data.len() >= required, Error::BufferTooSmall("vertex data"))
 }
 
-#[allow(dead_code)] // used by upcoming modules
 /// Float vertex stream: `stride` in bytes (multiple of 4, `min_size..=256`), enough data for `vertex_count` elements.
 pub(crate) fn floats(data: &[f32], vertex_count: usize, stride: usize, min_size: usize) -> Result<()> {
     ensure(

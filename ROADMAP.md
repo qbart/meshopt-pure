@@ -11,7 +11,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | quantization | ✅ | 4/4 |
 | indexanalyzer (analyzeVertexCache/Fetch) | ✅ | no C tests; 2 sanity |
 | vfetchoptimizer | ✅ | no C tests; 1 sanity |
-| indexgenerator | ⬜ | – |
+| indexgenerator | ✅ | 5/5 |
 | vcacheoptimizer | ⬜ | – |
 | overdrawoptimizer | ⬜ | – |
 | rasterizer (analyzeOverdraw/Coverage) | ⬜ | – |
