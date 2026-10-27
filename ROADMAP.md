@@ -25,7 +25,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | meshletcodec | ✅ | 4/4 + diff/fuzz-tested |
 | partition | ✅ | 3/3 + diff-tested |
 | simplifier | ⬜ | – |
-| tangentspace | ⬜ | – |
+| tangentspace | ✅ | 4/4 + diff-tested |
 | remesher | ⬜ | – |
 | opacitymap | ⬜ | – |
 | allocator (`setAllocator`, `setAllocatorCache`) | ❓ | needs `unsafe` for raw allocators |
