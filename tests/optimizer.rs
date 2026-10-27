@@ -36,3 +36,35 @@ fn vertex_cache_reorders_for_locality() -> Result<()> {
     assert!(optimize_vertex_cache_fifo(&mut out, &ib, 18, 8, 2).is_err());
     Ok(())
 }
+
+#[test]
+fn stripify_roundtrip() -> Result<()> {
+    // 2x1 quad grid
+    let ib = [0, 1, 3, 3, 1, 4, 1, 2, 4, 4, 2, 5];
+
+    for restart in [0u32, !0u32] {
+        let mut strip = vec![0u32; stripify_bound(12)?];
+        let n = stripify(&mut strip, &ib, 12, 6, restart)?;
+        assert!(n < 12);
+
+        let mut list = vec![0u32; unstripify_bound(n)?];
+        let m = unstripify(&mut list, &strip, n, restart)?;
+        assert_eq!(m, 12);
+
+        let mut sorted: Vec<[u32; 3]> = list[..m].as_chunks::<3>().0.iter().map(|t| canonical(*t)).collect();
+        let mut expected: Vec<[u32; 3]> = ib.as_chunks::<3>().0.iter().map(|t| canonical(*t)).collect();
+        sorted.sort();
+        expected.sort();
+        assert_eq!(sorted, expected);
+    }
+
+    assert!(stripify_bound(4).is_err());
+    assert!(unstripify_bound(2).is_err());
+    Ok(())
+}
+
+/// Rotates a triangle so the smallest index comes first, preserving winding.
+fn canonical(t: [u32; 3]) -> [u32; 3] {
+    let m = (0..3).min_by_key(|&i| t[i]).unwrap_or(0);
+    [t[m], t[(m + 1) % 3], t[(m + 2) % 3]]
+}

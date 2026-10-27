@@ -15,7 +15,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | vcacheoptimizer | ✅ | emptyMesh + diff-tested |
 | overdrawoptimizer | ✅ | emptyMesh + diff-tested |
 | rasterizer (analyzeOverdraw/Coverage) | ✅ | diff-tested |
-| stripifier | ⬜ | – |
+| stripifier | ✅ | diff-tested + 1 sanity |
 | indexcodec | ⬜ | – |
 | vertexcodec | ⬜ | – |
 | vertexfilter | ⬜ | – |
