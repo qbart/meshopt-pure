@@ -24,7 +24,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | meshletutils | ✅ | 3/3 + diff-tested |
 | meshletcodec | ✅ | 4/4 + diff/fuzz-tested |
 | partition | ✅ | 3/3 + diff-tested |
-| simplifier | ⬜ | – |
+| simplifier | ✅ | 26/26 + diff-tested |
 | tangentspace | ✅ | 4/4 + diff-tested |
 | remesher | ⬜ | – |
 | opacitymap | ✅ | 3/3 + diff-tested |
