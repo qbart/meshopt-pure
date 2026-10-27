@@ -9,8 +9,8 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | Module | Status | Tests |
 |---|---|---|
 | quantization | ✅ | 4/4 |
-| indexanalyzer (analyzeVertexCache/Fetch) | ⬜ | – |
-| vfetchoptimizer | ⬜ | – |
+| indexanalyzer (analyzeVertexCache/Fetch) | ✅ | no C tests; 2 sanity |
+| vfetchoptimizer | ✅ | no C tests; 1 sanity |
 | indexgenerator | ⬜ | – |
 | vcacheoptimizer | ⬜ | – |
 | overdrawoptimizer | ⬜ | – |
