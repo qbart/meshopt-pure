@@ -6,6 +6,7 @@ use meshoptimizer::*;
 fn empty_mesh() -> Result<()> {
     optimize_vertex_cache(&mut [], &[], 0, 0)?;
     optimize_vertex_cache_fifo(&mut [], &[], 0, 0, 16)?;
+    optimize_overdraw(&mut [], &[], 0, &[], 0, 12, 1.0)?;
     Ok(())
 }
 
@@ -19,7 +20,6 @@ fn vertex_cache_reorders_for_locality() -> Result<()> {
         let mut out = [0u32; 18];
         optimize(&mut out, &ib, 18, 8)?;
         assert!(analyze_vertex_cache(&out, 18, 8, 3, 0, 0)?.vertices_transformed <= before.vertices_transformed);
-
     }
 
     let mut inplace = ib;
