@@ -19,7 +19,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | indexcodec | ✅ | 21/21 + diff/fuzz-tested |
 | vertexcodec | ✅ | 19/19 + diff/fuzz-tested |
 | vertexfilter | ✅ | 15/15 + diff-tested |
-| spatialorder | ⬜ | – |
+| spatialorder | ✅ | diff-tested + 2 sanity |
 | clusterizer | ⬜ | – |
 | meshletutils | ⬜ | – |
 | meshletcodec | ⬜ | – |
