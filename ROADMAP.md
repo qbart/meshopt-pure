@@ -22,7 +22,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | spatialorder | ✅ | diff-tested + 2 sanity |
 | clusterizer | ✅ | 7/7 + diff-tested |
 | meshletutils | ✅ | 3/3 + diff-tested |
-| meshletcodec | ⬜ | – |
+| meshletcodec | ✅ | 4/4 + diff/fuzz-tested |
 | partition | ✅ | 3/3 + diff-tested |
 | simplifier | ⬜ | – |
 | tangentspace | ⬜ | – |
