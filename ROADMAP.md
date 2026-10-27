@@ -12,7 +12,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | indexanalyzer (analyzeVertexCache/Fetch) | ✅ | no C tests; 2 sanity |
 | vfetchoptimizer | ✅ | no C tests; 1 sanity |
 | indexgenerator | ✅ | 5/5 |
-| vcacheoptimizer | ⬜ | – |
+| vcacheoptimizer | ✅ | emptyMesh (partial) + diff-tested |
 | overdrawoptimizer | ⬜ | – |
 | rasterizer (analyzeOverdraw/Coverage) | ⬜ | – |
 | stripifier | ⬜ | – |
