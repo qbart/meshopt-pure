@@ -1,0 +1,18 @@
+[package]
+name = "meshoptimizer"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Pure Rust port of meshoptimizer (https://github.com/zeux/meshoptimizer)"
+
+[dependencies]
+
+[dev-dependencies]
+
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
