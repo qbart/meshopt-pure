@@ -3,7 +3,9 @@
 
 mod error;
 mod hash;
+mod index;
 mod indexanalyzer;
+mod indexcodec;
 mod indexgenerator;
 mod math;
 mod overdrawoptimizer;
@@ -15,7 +17,9 @@ mod vcacheoptimizer;
 mod vfetchoptimizer;
 
 pub use error::{Error, Result};
+pub use index::IndexType;
 pub use indexanalyzer::*;
+pub use indexcodec::*;
 pub use indexgenerator::*;
 pub use overdrawoptimizer::*;
 pub use quantization::*;

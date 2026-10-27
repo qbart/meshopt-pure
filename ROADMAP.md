@@ -16,7 +16,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | overdrawoptimizer | ✅ | emptyMesh + diff-tested |
 | rasterizer (analyzeOverdraw/Coverage) | ✅ | diff-tested |
 | stripifier | ✅ | diff-tested + 1 sanity |
-| indexcodec | ⬜ | – |
+| indexcodec | ✅ | 21/21 + diff/fuzz-tested |
 | vertexcodec | ⬜ | – |
 | vertexfilter | ⬜ | – |
 | spatialorder | ⬜ | – |
