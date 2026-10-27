@@ -26,7 +26,7 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision
 | partition | ✅ | 3/3 + diff-tested |
 | simplifier | ✅ | 26/26 + diff-tested |
 | tangentspace | ✅ | 4/4 + diff-tested |
-| remesher | ⬜ | – |
+| remesher | ✅ | diff-tested + 1 sanity |
 | opacitymap | ✅ | 3/3 + diff-tested |
 | allocator (`setAllocator`, `setAllocatorCache`) | ❓ | needs `unsafe` for raw allocators |
 | u16 index adapters (C++ templates) | ⬜ | – |
