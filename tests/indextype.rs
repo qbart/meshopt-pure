@@ -47,6 +47,9 @@ fn widen(ib: &[u16]) -> Vec<u32> {
 
 const STRIDE: usize = 20;
 
+type Meshlets = (Vec<Meshlet>, Vec<u32>, Vec<u8>);
+type BuildMeshlets<'a> = &'a dyn Fn(&mut [Meshlet], &mut [u32], &mut [u8]) -> Result<usize>;
+
 fn vertex_count(vb: &[f32]) -> usize {
     vb.len() * 4 / STRIDE
 }
@@ -240,7 +243,7 @@ fn meshlets_u16() -> Result<()> {
     let (max_vertices, max_triangles) = (16, 16);
     let bound = build_meshlets_bound(ic, max_vertices, max_triangles)?;
 
-    let run = |build: &dyn Fn(&mut [Meshlet], &mut [u32], &mut [u8]) -> Result<usize>| -> Result<(Vec<Meshlet>, Vec<u32>, Vec<u8>)> {
+    let run = |build: BuildMeshlets| -> Result<Meshlets> {
         let mut ml = vec![Meshlet::default(); bound];
         let mut mv = vec![0u32; bound * max_vertices];
         let mut mt = vec![0u8; bound * max_triangles * 3];
