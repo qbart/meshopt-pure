@@ -48,9 +48,16 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
    NEON verified under qemu (`make test-aarch64`), Wasm under wasmtime (`make test-wasm`). AVX-512 vertex path skipped
    (no gain measured). ⬜ Wasm vertex/index decode at 0.79x/0.70x of C++. ❓ gltfpack on Wasm needs a 32-bit fix in
    `ktx-rs` (`MAX_ALLOC = 1 << 32`).
-6. ⬜ demo (`demo/main.cpp`, `nanite.cpp` statistics) as examples. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
+6. ✅ demo (`demo/main.cpp`, `nanite.cpp`, `extern/sdefl.h`; spec 40): output identical to the C++ demo. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
 
 ## Tools
+
+### demo (`demo/main.cpp`, `nanite.cpp`, `extern/sdefl.h`) — spec `docs/spec/40-demo.md`
+
+| Component | Status | Verification |
+|---|---|---|
+| main.cpp statistics, `-d`, nanite (`-n`, `CLRT`, `DUMP`) | ✅ | masked stdout + stderr identical to C++ on 5 meshes / 18 runs; golden tests |
+| sdefl | ✅ | byte-identical to C on 766 inputs x 9 levels; golden tests |
 
 ### codectest (`tools/codectest.cpp`) — spec `docs/spec/39-codectest.md`
 
