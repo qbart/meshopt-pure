@@ -25,7 +25,12 @@ Workspace crate `tools/` (`meshoptimizer-tools`, not published), binary `codecbe
 |---|---|---|---|---|---|---|---|---|---|---|
 | C++ SIMD (`-O3`) | 6.56 | 6.73 | 8.20 | 7.33 | 4.44 | 7.88 | 9.57 | 5.70 | 9.59 | 27.66 |
 | C++ `MESHOPTIMIZER_NO_SIMD` | 1.51 | 6.71 | 2.05 | 1.43 | 2.30 | 3.64 | 3.41 | 2.65 | 4.23 | 27.23 |
-| Rust (release, scalar) | 1.03 | 6.43 | 1.81 | 1.38 | 0.82 | 1.65 | 1.75 | 1.08 | 1.76 | 5.00 |
+| Rust scalar, initial port | 1.03 | 6.43 | 1.81 | 1.38 | 0.82 | 1.65 | 1.75 | 1.08 | 1.76 | 5.00 |
+| Rust scalar, tuned | 1.61 | 6.43 | 1.81 | 1.38 | 1.16 | 1.73 | 2.19 | 1.15 | 2.74 | 27.50 |
 
-Index decoding is at parity. The Rust scalar code trails even C++ scalar on vertex decode (0.7x) and filters
-(0.2–0.5x), so there is headroom before SIMD.
+Scalar tuning (safe code only):
+- vertex codec: byte groups specialized per bit width (const generics, 24-byte window), C-like delta loop with
+  const width, decode scratch buffers allocated once per call. Now 1.07x C++ scalar.
+- filters: elements as `[u8; 4]`/`[u8; 8]` chunks with constant component offsets. `exp` vectorizes (parity).
+  oct/quat/color stay at 0.4–0.65x C++ scalar: Rust's saturating `f32 as i32` blocks the vectorization GCC applies to
+  these loops (non-saturating casts need `unsafe`; measured 1.6–2.8x faster), so they are left to the SIMD paths.
