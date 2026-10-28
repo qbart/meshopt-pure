@@ -39,7 +39,7 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 
 ## Next steps
 
-1. 🚧 gltfpack port (KTX via `qbart/ktx-rs`; BasisU/WebP/meshopt encoders must be pure Rust).
+1. 🚧 gltfpack port: done except WebP (`-tw`), which needs a pure Rust lossy WebP encoder (human decision).
 
 ## Tools
 
@@ -54,6 +54,6 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 | micro_ply (`extern/micro_ply.h`) | ✅ | dump-diffed vs C (ASCII/binary/malformed) |
 | parsegltf / parseobj / splats | ✅ | byte-identical output vs C++ gltfpack |
 | mesh / stream / animation / node / material / image | ✅ | byte-identical output vs C++ gltfpack |
-| json / write / fileio / gltfpack (CLI) | ✅ | 287 golden cases in repo; 73 models x 35 option sets identical out of repo |
-| encodebasis (KTX2 via `qbart/ktx-rs`) | ⬜ | currently reports "built without BasisU support" like C++ without `WITH_BASISU` |
+| json / write / fileio / gltfpack (CLI) | ✅ | 305 golden cases in repo; 73 models x 35 option sets identical out of repo |
+| encodebasis (KTX2 via `qbart/ktx-rs`) | ✅ | 18 golden cases; 16 textured models x 12 option sets identical to C++ BasisU build (spec 34) |
 | encodewebp | ❓ | no pure Rust lossy WebP encoder |

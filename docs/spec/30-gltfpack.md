@@ -9,7 +9,7 @@ Workspace crate `gltfpack/` (lib + `gltfpack` binary). Same CLI, same output byt
 | `extern/fast_obj.h` | ported: `gltfpack/src/fast_obj.rs` (spec 32) |
 | `extern/micro_ply.h` | ported: `gltfpack/src/micro_ply.rs` (spec 33) |
 | `../src/meshoptimizer.h` | `meshoptimizer` crate (this repo) |
-| BasisU encoder (`WITH_BASISU`) | `ktx-rs` (qbart/ktx-rs, pure Rust Basis ETC1S/UASTC) |
+| BasisU encoder (`WITH_BASISU`) | `ktx-rs` (qbart/ktx-rs, pure Rust Basis ETC1S/UASTC) + `zstd-pure-rs` (spec 34) |
 | libwebp (`WITH_LIBWEBP`) | ❓ no pure Rust lossy WebP encoder; needs human decision |
 | `extern/sdefl.h` | not used by gltfpack |
 
@@ -34,10 +34,10 @@ modules of the same name. `encodebasis.cpp` → `encodebasis.rs` (ktx-rs). `wasi
 - OBJ faces with < 3 vertices (index count wraps, C++ aborts on allocation) are skipped with a warning.
 - Out-of-range OBJ/accessor reads read as zero; failing meshoptimizer calls on asserted-invalid arguments leave
   the affected stream empty/zeroed.
-- BasisU (`-tc`/`-tu`) is reported as unavailable until the ktx-rs encoder is wired in; WebP (`-tw`) is unavailable.
+- WebP (`-tw`) is unavailable ("built without WebP support"); BasisU divergences are listed in spec 34.
 
 ## Verification
-- `gltfpack/tests/golden.rs`: 287 cases (`tests/data/cases.txt`: 18 Khronos sample models, pirate.obj, OBJ/PLY edge
+- `gltfpack/tests/golden.rs`: 305 cases (18 with KTX2 textures) (`tests/data/cases.txt`: 18 Khronos sample models, pirate.obj, OBJ/PLY edge
   cases x up to 14 option sets, .glb and .gltf output) compared byte-for-byte (all output files + exit code) with
   `tests/data/expected/`, produced by the C++ gltfpack 1.3 reference via `tests/gen-golden.sh`.
 - Out-of-repo diff runs: 73 sample model files x 35 option sets, plus stdout/stderr, all identical.
