@@ -6,6 +6,9 @@
 //! is safe Rust. Without the feature or on other architectures the tokens are uninhabited and `detect()` is `None`.
 
 #[cfg(all(feature = "simd", target_arch = "x86_64"))]
+mod common;
+
+#[cfg(all(feature = "simd", target_arch = "x86_64"))]
 mod x86;
 #[cfg(all(feature = "simd", target_arch = "x86_64"))]
 pub(crate) use x86::*;
