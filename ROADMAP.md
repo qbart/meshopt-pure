@@ -49,8 +49,8 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 |---|---|---|
 | cgltf + jsmn (`extern/cgltf.h`) | ✅ | dump-diffed vs C on samples + 3.5k fuzzed files |
 | printf/strtod helpers (`cstd`) | ✅ | 2M random floats vs glibc |
-| fast_obj (`extern/fast_obj.h`) | ⬜ | |
-| micro_ply (`extern/micro_ply.h`) | ⬜ | |
+| fast_obj (`extern/fast_obj.h`) | ✅ | dump-diffed vs C (OBJ/MTL edge cases) |
+| micro_ply (`extern/micro_ply.h`) | ✅ | dump-diffed vs C (ASCII/binary/malformed) |
 | parsegltf / parseobj / splats | ⬜ | |
 | mesh / stream / animation / node / material / image | ⬜ | |
 | json / write / fileio / gltfpack (CLI) | ⬜ | |

@@ -3,3 +3,5 @@
 
 pub mod cgltf;
 pub mod cstd;
+pub mod fast_obj;
+pub mod micro_ply;
