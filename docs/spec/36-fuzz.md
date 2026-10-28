@@ -47,3 +47,7 @@ Needs nightly and `cargo install cargo-fuzz`:
 - Long runs (release, 4 seeds each): 40M codec, 12M simplify, 6M cluster inputs without failures.
 - libFuzzer + ASan, 20 min per target: 10.5M codec, 2.0M simplify, 0.36M cluster runs without failures
   (coverage 1097 / 1589 / 1384 edges).
+
+## Makefile
+`make fuzz` / `fuzz-<target>` (`ITERATIONS`, `SEED`), `make fuzz-replay TARGET= FILE=`,
+`make libfuzzer` / `libfuzzer-<target>` (`FUZZ_TIME` seconds, `FUZZ_MAX_LEN`), `make fuzz-setup` (nightly + cargo-fuzz).
