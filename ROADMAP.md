@@ -43,7 +43,7 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 2. ✅ clusterlod (`demo/clusterlod.h`): done (spec 35).
 3. ✅ fuzz harnesses (`tools/codecfuzz`, `simplifyfuzz`, `clusterfuzz`) with a pure Rust mutation driver, plus
    coverage-guided libFuzzer targets in a separate dev-only crate that never reaches the library (spec 36).
-4. 🟡 codec tools: `codecbench` done (spec 37); ⬜ `codectest`. Decoder performance gap vs C++, see spec 37.
+4. 🚧 codec tools: `codecbench` done (spec 37); ⬜ `codectest`. Decoder performance gap vs C++, see spec 37.
 5. ⬜ demo (`demo/main.cpp`, `nanite.cpp` statistics) as examples. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
 
 ## Tools
@@ -53,7 +53,7 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 | Component | Status | Verification |
 |---|---|---|
 | synthetic + file modes | ✅ | setup hashes vs C++ (N = 1/7/64/100); N = 1000 sizes and file ratios identical |
-| decoder throughput | 🟡 | idx at parity; vtx 0.7x, filters 0.2–0.5x of C++ scalar; C++ SIMD vtx 6.4x faster |
+| decoder throughput | 🚧 | idx at parity; vtx 0.7x, filters 0.2–0.5x of C++ scalar; C++ SIMD vtx 6.4x faster |
 
 ### fuzz (`tools/*fuzz.cpp`) — spec `docs/spec/36-fuzz.md`
 
