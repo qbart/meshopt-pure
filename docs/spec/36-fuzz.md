@@ -18,9 +18,9 @@ Workspace crate `fuzz/` (`meshoptimizer-fuzz`, not published).
 - C++ `assert` → `assert!`. Results that C++ ignores are ignored, `Err` included. Out-of-bounds accesses and
   other panics fail the run: they would be crashes in C++, and the library must not panic.
 
-## Driver (instead of libFuzzer)
-`cargo-fuzz`/`libfuzzer-sys` builds LLVM's C++ libFuzzer, so it needs human approval (AGENTS.md); not used.
-`driver` is a pure Rust mutation fuzzer without coverage feedback:
+## Drivers
+### Pure Rust mutation driver (`driver`, default)
+No coverage feedback, runs on stable, no C/C++ involved:
 - splitmix64 RNG;
 - libFuzzer-style byte mutations: bit flips, interesting bytes, insert/erase/duplicate, truncate, splice;
 - target-specific seeds. Codec seeds are valid index/sequence/vertex/meshlet encodings, so mutations get past
@@ -28,9 +28,22 @@ Workspace crate `fuzz/` (`meshoptimizer-fuzz`, not published).
 
 Run it with `cargo run -p meshoptimizer-fuzz --release --bin fuzz -- <codec|simplify|cluster> [iterations] [seed]`.
 A crashing input is saved to `fuzz-<target>-crash.bin`; rerun it with `--replay <file>`.
-The harnesses keep the libFuzzer signature (`fn(&[u8])`), so they can be wired to `libfuzzer-sys` if it is approved.
+
+### libFuzzer (`fuzz/libfuzzer`, coverage-guided, dev only)
+`libfuzzer-sys` builds LLVM's C++ libFuzzer. Approved by the human on the condition that it never reaches the
+library, so:
+- `fuzz/libfuzzer` is its own workspace (`[workspace]`, own `Cargo.lock`) and is in the root `exclude` list;
+  `cargo build`/`test` of the workspace never builds it and `meshoptimizer` keeps zero dependencies.
+- Each target is one `fuzz_target!` line calling the same `test_one_input`. The `#[no_mangle]` entry point the
+  macro emits is the only unsafe-adjacent code, and it stays in that crate.
+
+Needs nightly and `cargo install cargo-fuzz`:
+`cargo +nightly fuzz run --fuzz-dir fuzz/libfuzzer <codec|simplify|cluster> -- -max_len=8192`
+(AddressSanitizer on by default; `corpus/`, `artifacts/` are gitignored).
 
 ## Verification
 - `fuzz/tests/fuzz.rs`: 4 seeds x (500 codec, 100 simplify, 200 cluster) inputs in `cargo test`, plus a glibc
   `rand()` sequence check.
 - Long runs (release, 4 seeds each): 40M codec, 12M simplify, 6M cluster inputs without failures.
+- libFuzzer + ASan, 20 min per target: 10.5M codec, 2.0M simplify, 0.36M cluster runs without failures
+  (coverage 1097 / 1589 / 1384 edges).
