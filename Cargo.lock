@@ -3,12 +3,73 @@
 version = 4
 
 [[package]]
+name = "adler2"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
+
+[[package]]
+name = "bytemuck"
+version = "1.25.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95832e849adfb21180ccb6826a99da14e5d266ae5c2e668e1602cf234f153797"
+
+[[package]]
 name = "gltfpack"
 version = "0.1.0"
 dependencies = [
+ "ktx-rs",
  "meshoptimizer",
+ "zstd-pure-rs",
 ]
+
+[[package]]
+name = "ktx-rs"
+version = "4.4.2"
+source = "git+https://github.com/qbart/ktx-rs#f91c89de36426708c507f6fad29a09dce3b23d19"
+dependencies = [
+ "bytemuck",
+ "ktx-rs-macros",
+ "miniz_oxide",
+ "ruzstd",
+ "zstd-pure-rs",
+]
+
+[[package]]
+name = "ktx-rs-macros"
+version = "4.4.2"
+source = "git+https://github.com/qbart/ktx-rs#f91c89de36426708c507f6fad29a09dce3b23d19"
 
 [[package]]
 name = "meshoptimizer"
 version = "0.1.0"
+
+[[package]]
+name = "miniz_oxide"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b63fbc4a50860e98e7b2aa7804ded1db5cbc3aff9193adaff57a6931bf7c4b4c"
+dependencies = [
+ "adler2",
+]
+
+[[package]]
+name = "ruzstd"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69e4ce4a039f42bf25920b95667e4d789e98749ab11bbb8d2c2936f788421bb5"
+dependencies = [
+ "twox-hash",
+]
+
+[[package]]
+name = "twox-hash"
+version = "2.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86a801b3cea342a06d468c8710662aa29e5e05e4f5c0d62f00bbb7f2ad7941c2"
+
+[[package]]
+name = "zstd-pure-rs"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71cafafebc1c81515698e9b97846d619f993db5cbcf50b72e4c6e58a8477b86f"

@@ -15,6 +15,8 @@ path = "src/main.rs"
 
 [dependencies]
 meshoptimizer = { path = ".." }
+ktx = { package = "ktx-rs", git = "https://github.com/qbart/ktx-rs", default-features = false }
+zstd-pure-rs = "0.2.0"
 
 [lints]
 workspace = true
