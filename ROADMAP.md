@@ -2,7 +2,7 @@
 
 Pure Rust port of meshoptimizer v1.3 (`ref/meshopt`, commit `f0a684f`). Specs/audit log: `docs/spec/`.
 
-Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision · ➖ intentionally not ported
+Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision · ➖ intentionally not ported · ⏸ deliberately deferred
 
 ## Core library (`src/*.cpp`)
 
@@ -39,7 +39,7 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 
 ## Next steps
 
-1. 🚧 gltfpack port: done except WebP (`-tw`), which needs a pure Rust lossy WebP encoder (human decision).
+1. ✅ gltfpack port: done; WebP (`-tw`) deliberately deferred (see below).
 
 ## Tools
 
@@ -54,6 +54,11 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 | micro_ply (`extern/micro_ply.h`) | ✅ | dump-diffed vs C (ASCII/binary/malformed) |
 | parsegltf / parseobj / splats | ✅ | byte-identical output vs C++ gltfpack |
 | mesh / stream / animation / node / material / image | ✅ | byte-identical output vs C++ gltfpack |
-| json / write / fileio / gltfpack (CLI) | ✅ | 305 golden cases in repo; 73 models x 35 option sets identical out of repo |
+| json / write / fileio / gltfpack (CLI) | ✅ | 306 golden cases in repo; 73 models x 35 option sets identical out of repo |
 | encodebasis (KTX2 via `qbart/ktx-rs`) | ✅ | 18 golden cases; 16 textured models x 12 option sets identical to C++ BasisU build (spec 34) |
-| encodewebp | ❓ | no pure Rust lossy WebP encoder |
+| encodewebp (`-tw`) | ⏸ deferred | 1 golden case for the "built without WebP support" error |
+
+**WebP deferred (human decision):** gltfpack needs libwebp's lossy encoder (`emulate_jpeg_size`,
+`WebPPictureRescale`). The pure Rust crates (`zenwebp` AGPL, `oxideav-webp`) are independent encoders, so `-tw`
+could not be byte-identical to C++ gltfpack, and the C `libwebp` bindings are not allowed. It stays unavailable,
+like a C++ build without `WITH_LIBWEBP`, until a pure Rust libwebp encoder port is worth doing (spec 30).
