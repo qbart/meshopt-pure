@@ -17,16 +17,8 @@ pub enum EncodeExpMode {
     Clamped,
 }
 
-fn get16(buffer: &[u8], i: usize) -> u16 {
-    u16::from_le_bytes([buffer[i * 2], buffer[i * 2 + 1]])
-}
-
 fn set16(buffer: &mut [u8], i: usize, v: u16) {
     buffer[i * 2..i * 2 + 2].copy_from_slice(&v.to_le_bytes());
-}
-
-fn get32(buffer: &[u8], i: usize) -> u32 {
-    u32::from_le_bytes([buffer[i * 4], buffer[i * 4 + 1], buffer[i * 4 + 2], buffer[i * 4 + 3]])
 }
 
 fn set32(buffer: &mut [u8], i: usize, v: u32) {
@@ -38,30 +30,46 @@ fn rounded(v: f32, s: f32) -> i32 {
     (v * s + if v >= 0.0 { 0.5 } else { -0.5 }) as i32
 }
 
-/// `bits` is the component width (8 or 16); components are signed.
-fn decode_oct(data: &mut [u8], count: usize, bits: u32) {
-    let max = ((1i32 << (bits - 1)) - 1) as f32;
+/// Component `k` of a 4-component element with `S / 4`-byte components (`S` = 4 or 8), zero extended.
+/// `S` is a constant, so element accesses compile to fixed offsets without bounds checks.
+#[inline(always)]
+fn load<const S: usize>(c: &[u8; S], k: usize) -> u32 {
+    if S == 4 {
+        u32::from(c[k])
+    } else {
+        u32::from(u16::from_le_bytes([c[k * 2], c[k * 2 + 1]]))
+    }
+}
 
-    let get = |data: &[u8], i: usize| -> f32 {
-        if bits == 8 {
-            f32::from(data[i] as i8)
-        } else {
-            f32::from(get16(data, i) as i16)
-        }
-    };
-    let set = |data: &mut [u8], i: usize, v: i32| {
-        if bits == 8 {
-            data[i] = v as u8;
-        } else {
-            set16(data, i, v as u16);
-        }
-    };
+/// Sign extended variant of [`load`].
+#[inline(always)]
+fn load_signed<const S: usize>(c: &[u8; S], k: usize) -> i32 {
+    if S == 4 {
+        i32::from(c[k] as i8)
+    } else {
+        i32::from(i16::from_le_bytes([c[k * 2], c[k * 2 + 1]]))
+    }
+}
 
-    for i in 0..count {
+/// Stores the low `S / 4` bytes of `v` into component `k`.
+#[inline(always)]
+fn store<const S: usize>(c: &mut [u8; S], k: usize, v: i32) {
+    if S == 4 {
+        c[k] = v as u8;
+    } else {
+        c[k * 2..k * 2 + 2].copy_from_slice(&(v as u16).to_le_bytes());
+    }
+}
+
+/// `S` is the element stride: 4 (8-bit components) or 8 (16-bit components); components are signed.
+fn decode_oct<const S: usize>(data: &mut [u8], count: usize) {
+    let max = ((1i32 << (S * 2 - 1)) - 1) as f32;
+
+    for c in data[..count * S].as_chunks_mut::<S>().0 {
         // convert x and y to floats and reconstruct z; this assumes zf encodes 1.f at the same bit count
-        let mut x = get(data, i * 4);
-        let mut y = get(data, i * 4 + 1);
-        let z = get(data, i * 4 + 2) - x.abs() - y.abs();
+        let mut x = load_signed(c, 0) as f32;
+        let mut y = load_signed(c, 1) as f32;
+        let z = load_signed(c, 2) as f32 - x.abs() - y.abs();
 
         // fixup octahedral coordinates for z<0
         let t = if z >= 0.0 { 0.0 } else { z };
@@ -74,26 +82,26 @@ fn decode_oct(data: &mut [u8], count: usize, bits: u32) {
         let s = max / l;
 
         // rounded signed float->int
-        set(data, i * 4, rounded(x, s));
-        set(data, i * 4 + 1, rounded(y, s));
-        set(data, i * 4 + 2, rounded(z, s));
+        store(c, 0, rounded(x, s));
+        store(c, 1, rounded(y, s));
+        store(c, 2, rounded(z, s));
     }
 }
 
 fn decode_quat(data: &mut [u8], count: usize) {
     let scale = 32767.0 / 2.0f32.sqrt();
 
-    for i in 0..count {
-        let q3 = get16(data, i * 4 + 3) as i16;
+    for c in data[..count * 8].as_chunks_mut::<8>().0 {
+        let q3 = load_signed(c, 3);
 
         // recover scale from the high byte/word of the component
-        let sf = i32::from(q3) | 3;
+        let sf = q3 | 3;
         let s = sf as f32;
 
         // convert x/y/z to floating point (unscaled! implied scale of 1/sqrt(2.f) * 1/sf)
-        let x = f32::from(get16(data, i * 4) as i16);
-        let y = f32::from(get16(data, i * 4 + 1) as i16);
-        let z = f32::from(get16(data, i * 4 + 2) as i16);
+        let x = load_signed(c, 0) as f32;
+        let y = load_signed(c, 1) as f32;
+        let z = load_signed(c, 2) as f32;
 
         // reconstruct w as a square root (unscaled); we clamp to 0.f to avoid NaN due to precision errors
         let ws = s * s;
@@ -110,19 +118,19 @@ fn decode_quat(data: &mut [u8], count: usize) {
         let zf = rounded(z, ss);
         let wf = (w * ss + 0.5) as i32;
 
-        let qc = usize::from((q3 & 3) as u8);
+        let qc = (q3 & 3) as usize;
 
         // output order is dictated by input index
-        set16(data, i * 4 + ((qc + 1) & 3), xf as u16);
-        set16(data, i * 4 + ((qc + 2) & 3), yf as u16);
-        set16(data, i * 4 + ((qc + 3) & 3), zf as u16);
-        set16(data, i * 4 + (qc & 3), wf as u16);
+        store(c, (qc + 1) & 3, xf);
+        store(c, (qc + 2) & 3, yf);
+        store(c, (qc + 3) & 3, zf);
+        store(c, qc & 3, wf);
     }
 }
 
 fn decode_exp(data: &mut [u8], count: usize) {
-    for i in 0..count {
-        let v = get32(data, i);
+    for c in data[..count * 4].as_chunks_mut::<4>().0 {
+        let v = u32::from_le_bytes(*c);
 
         // decode mantissa and exponent
         let m = ((v << 8) as i32) >> 8;
@@ -131,59 +139,43 @@ fn decode_exp(data: &mut [u8], count: usize) {
         // optimized version of ldexp(float(m), e)
         let f = f32::from_bits(((e + 127) as u32) << 23) * m as f32;
 
-        set32(data, i, f.to_bits());
+        *c = f.to_bits().to_le_bytes();
     }
 }
 
-/// `bits` is the component width (8 or 16); co/cg are sign extended.
-fn decode_color(data: &mut [u8], count: usize, bits: u32) {
-    let max = ((1i32 << bits) - 1) as f32;
+/// `S` is the element stride: 4 (8-bit components) or 8 (16-bit components); co/cg are sign extended.
+fn decode_color<const S: usize>(data: &mut [u8], count: usize) {
+    let max = ((1i32 << (S * 2)) - 1) as f32;
 
-    let get = |data: &[u8], i: usize| -> i32 { if bits == 8 { i32::from(data[i]) } else { i32::from(get16(data, i)) } };
-    let get_signed = |data: &[u8], i: usize| -> i32 {
-        if bits == 8 {
-            i32::from(data[i] as i8)
-        } else {
-            i32::from(get16(data, i) as i16)
-        }
-    };
-    let set = |data: &mut [u8], i: usize, v: i32| {
-        if bits == 8 {
-            data[i] = v as u8;
-        } else {
-            set16(data, i, v as u16);
-        }
-    };
-
-    for i in 0..count {
+    for c in data[..count * S].as_chunks_mut::<S>().0 {
         // recover scale from alpha high bit
-        let mut as_ = get(data, i * 4 + 3);
+        let mut as_ = load(c, 3) as i32;
         as_ |= as_ >> 1;
         as_ |= as_ >> 2;
         as_ |= as_ >> 4;
         as_ |= as_ >> 8; // noop for 8-bit
 
         // convert to RGB in fixed point (co/cg are sign extended)
-        let y = get(data, i * 4);
-        let co = get_signed(data, i * 4 + 1);
-        let cg = get_signed(data, i * 4 + 2);
+        let y = load(c, 0) as i32;
+        let co = load_signed(c, 1);
+        let cg = load_signed(c, 2);
 
         let r = y + co - cg;
         let g = y + cg;
         let b = y - co - cg;
 
         // expand alpha by one bit to match other components
-        let mut a = get(data, i * 4 + 3);
+        let mut a = load(c, 3) as i32;
         a = ((a << 1) & as_) | (a & 1);
 
         // compute scaling factor
         let ss = max / as_ as f32;
 
         // rounded float->int
-        set(data, i * 4, (r as f32 * ss + 0.5) as i32);
-        set(data, i * 4 + 1, (g as f32 * ss + 0.5) as i32);
-        set(data, i * 4 + 2, (b as f32 * ss + 0.5) as i32);
-        set(data, i * 4 + 3, (a as f32 * ss + 0.5) as i32);
+        store(c, 0, (r as f32 * ss + 0.5) as i32);
+        store(c, 1, (g as f32 * ss + 0.5) as i32);
+        store(c, 2, (b as f32 * ss + 0.5) as i32);
+        store(c, 3, (a as f32 * ss + 0.5) as i32);
     }
 }
 
@@ -197,7 +189,11 @@ pub fn decode_filter_oct(buffer: &mut [u8], count: usize, stride: usize) -> Resu
     ensure(stride == 4 || stride == 8, Error::InvalidArgument("stride must be 4 or 8"))?;
     validate_buffer(buffer, count, stride)?;
 
-    decode_oct(buffer, count, if stride == 4 { 8 } else { 16 });
+    if stride == 4 {
+        decode_oct::<4>(buffer, count);
+    } else {
+        decode_oct::<8>(buffer, count);
+    }
     Ok(())
 }
 
@@ -230,7 +226,11 @@ pub fn decode_filter_color(buffer: &mut [u8], count: usize, stride: usize) -> Re
     ensure(stride == 4 || stride == 8, Error::InvalidArgument("stride must be 4 or 8"))?;
     validate_buffer(buffer, count, stride)?;
 
-    decode_color(buffer, count, if stride == 4 { 8 } else { 16 });
+    if stride == 4 {
+        decode_color::<4>(buffer, count);
+    } else {
+        decode_color::<8>(buffer, count);
+    }
     Ok(())
 }
 
