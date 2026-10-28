@@ -40,8 +40,18 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 ## Next steps
 
 1. ✅ gltfpack port: done; WebP (`-tw`) deliberately deferred (see below).
+2. ✅ clusterlod (`demo/clusterlod.h`): done (spec 35).
+3. ⬜ fuzz targets (`tools/codecfuzz`, `simplifyfuzz`, `clusterfuzz`) as `cargo-fuzz` targets.
+4. ⬜ codec tools (`tools/codectest`, `codecbench`).
+5. ⬜ demo (`demo/main.cpp`, `nanite.cpp` statistics) as examples. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
 
 ## Tools
+
+### clusterlod (`demo/clusterlod.h`) — spec `docs/spec/35-clusterlod.md`
+
+| Component | Status | Verification |
+|---|---|---|
+| clod_build, clod_local_indices, clod_build_hierarchy(_bound), default configs | ✅ | 26 golden hashes vs C++ (pirate + grid x 13 configs); 90k-tri torus identical out of repo |
 
 ### gltfpack (`gltf/*.cpp`) — spec `docs/spec/30-gltfpack.md`
 
