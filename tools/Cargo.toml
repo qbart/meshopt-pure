@@ -6,8 +6,13 @@ license = "MIT"
 publish = false
 description = "Ports of meshoptimizer tools/ (codecbench)"
 
+[features]
+default = ["simd"]
+# `--no-default-features` benchmarks the scalar decoders (C++: MESHOPTIMIZER_NO_SIMD)
+simd = ["meshoptimizer/simd"]
+
 [dependencies]
-meshoptimizer = { path = ".." }
+meshoptimizer = { path = "..", default-features = false }
 
 [lints]
 workspace = true

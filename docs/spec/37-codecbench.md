@@ -27,6 +27,8 @@ Workspace crate `tools/` (`meshoptimizer-tools`, not published), binary `codecbe
 | C++ `MESHOPTIMIZER_NO_SIMD` | 1.51 | 6.71 | 2.05 | 1.43 | 2.30 | 3.64 | 3.41 | 2.65 | 4.23 | 27.23 |
 | Rust scalar, initial port | 1.03 | 6.43 | 1.81 | 1.38 | 0.82 | 1.65 | 1.75 | 1.08 | 1.76 | 5.00 |
 | Rust scalar, tuned | 1.61 | 6.43 | 1.81 | 1.38 | 1.16 | 1.73 | 2.19 | 1.15 | 2.74 | 27.50 |
+| Rust scalar (`make codecbench-scalar`) | 1.64 | 6.43 | 1.80 | 1.38 | 1.16 | 1.76 | 2.21 | 1.19 | 2.18 | 27.67 |
+| Rust SIMD (`make codecbench`, spec 38) | 6.08 | 6.42 | 7.38 | 5.37 | 4.46 | 7.99 | 9.74 | 5.67 | 9.63 | 28.06 |
 
 Scalar tuning (safe code only):
 - vertex codec: byte groups specialized per bit width (const generics, 24-byte window), C-like delta loop with
@@ -34,3 +36,7 @@ Scalar tuning (safe code only):
 - filters: elements as `[u8; 4]`/`[u8; 8]` chunks with constant component offsets. `exp` vectorizes (parity).
   oct/quat/color stay at 0.4–0.65x C++ scalar: Rust's saturating `f32 as i32` blocks the vectorization GCC applies to
   these loops (non-saturating casts need `unsafe`; measured 1.6–2.8x faster), so they are left to the SIMD paths.
+  col12 dropped to 2.18 when color adopted C++'s x86 out-of-range conversion (spec 38).
+
+SIMD (spec 38) vs C++ SIMD: filters at parity (0.99–1.10x), vertex decode 0.92x, meshlets 0.90x, meshlets without
+vertex references 0.70x. The meshlet triangle loop is sensitive to code layout (5.2–5.7 GB/s across equivalent variants).

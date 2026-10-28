@@ -26,7 +26,7 @@ Reference: `ref/meshopt` (zeux/meshoptimizer, v1.3, commit `f0a684f`). Not versi
   `setAllocator` only as a raw `unsafe` FFI symbol.
 
 ## Numerics
-- Only scalar code paths are ported (SIMD paths need `unsafe` intrinsics); outputs must be bit-identical.
+- Scalar code paths are ported everywhere; the x86-64 SIMD decoders are ported behind the default `simd` feature with runtime detection (spec 38, the only `unsafe`). Outputs must be bit-identical to the matching C build.
 - `float` math stays `f32`; integer wraparound semantics from C (`unsigned`) use `wrapping_*`.
 
 ## Tests

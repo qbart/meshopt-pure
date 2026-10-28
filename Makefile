@@ -11,7 +11,7 @@ SEED ?= 0
 FUZZ_TIME ?= 600
 FUZZ_MAX_LEN ?= 8192
 
-.PHONY: codecbench fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
+.PHONY: codecbench codecbench-scalar fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
 	libfuzzer $(addprefix libfuzzer-,$(FUZZ_TARGETS)) fuzz-setup
 
 fuzz: $(addprefix fuzz-,$(FUZZ_TARGETS))
@@ -34,3 +34,7 @@ fuzz-setup:
 
 codecbench:
 	cargo run -p meshoptimizer-tools --release --bin codecbench -- $(ARGS)
+
+# scalar decoders only (C++: MESHOPTIMIZER_NO_SIMD)
+codecbench-scalar:
+	cargo run -p meshoptimizer-tools --release --no-default-features --bin codecbench -- $(ARGS)

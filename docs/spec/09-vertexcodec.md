@@ -9,11 +9,11 @@
 | `meshopt_decodeVertexVersion` | `decode_vertex_version(buffer, buffer_size) -> Result<i32>` |
 | `meshopt_decodeVertexBuffer` | `decode_vertex_buffer(destination: &mut [u8], vertex_count, vertex_size, buffer, buffer_size) -> Result<()>` |
 
-- Only the scalar decoder (`decodeVertexBlock`) is ported; SSE/AVX/NEON/WASM paths need `unsafe` intrinsics.
+- Scalar decoder (`decodeVertexBlock`), plus the SSSE3 decoder (`decodeVertexBlockSimd`) with runtime detection (spec 38); AVX/NEON/WASM paths not ported.
   `MESHOPTIMIZER_VERTEXCODEC_ZEROCOPY` is not supported (always decodes via the transposed scratch block).
 - Generic `encodeDeltas4<T, Xor>`/`decodeDeltas4<T, Xor>` → runtime element width (1/2/4) with masked `u32` math.
 - `TRACE` statistics are not ported.
 - Global encoder version is an `AtomicI32`; tests touching it serialize via a mutex.
 - Tests: all 19 vertex codec tests (12 run for both versions) + `decodeVersion` → `tests/vertexcodec.rs`.
 - Diff-tested: encodings byte-identical for levels 0–3 × versions 0/1 × vertex sizes 4/8/12/32.
-  Corrupted-stream decoding matches the C scalar build exactly; the C SIMD decoder can report `-2` where scalar reports `-3`.
+  Corrupted-stream decoding matches the C scalar build exactly (scalar path); the SIMD path can report `-2` where scalar reports `-3`, as in C.

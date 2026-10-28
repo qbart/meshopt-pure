@@ -9,7 +9,7 @@
 
 - `vertex_size` (2/4) is `V::SIZE` (`u16`/`u32`); `triangle_size` 3/4 is `T = u8` (3 bytes per triangle) / `T = u32` (packed).
 - Output slices need exactly `vertex_count` / `triangle_count * T::PER_TRIANGLE` elements (the C SIMD alignment padding is not required).
-- Scalar decoder only. On corrupted input the C SIMD decoder may return `-3` where C scalar (and this port) return `-2`.
+- Scalar decoder, plus the SSE4.1 decoder with runtime detection (spec 38). On corrupted input the SIMD decoder may return `-3` where the scalar one returns `-2`, as in C.
 - Encoder returns `Ok(0)` when the buffer is too small (C semantics).
 - Tests: `encodeMeshletBound`, `decodeMeshletSafety`, `decodeMeshletBasic`, `decodeMeshletTypical` → `tests/meshletcodec.rs`.
 - Diff-tested: encodings byte-identical; ~1000 corrupted streams decode identically to the C scalar build.
