@@ -25,6 +25,17 @@ fn set32(buffer: &mut [u8], i: usize, v: u32) {
     buffer[i * 4..i * 4 + 4].copy_from_slice(&v.to_le_bytes());
 }
 
+/// C `int(f)` as compiled for x86 (`cvttss2si`): truncates, and out of range values and NaN give `INT_MIN`
+/// (Rust's `as` saturates instead). Only color decoding can produce such values (zero alpha scale on malformed data);
+/// oct and quat use plain `as`: their only out of range value is oct's NaN, which both truncate to 0.
+fn cvtt(f: f32) -> i32 {
+    if (-2147483648.0..2147483648.0).contains(&f) {
+        f as i32
+    } else {
+        i32::MIN
+    }
+}
+
 /// Rounded signed float->int of `v * s`, rounding direction taken from the sign of `v` like the C code.
 fn rounded(v: f32, s: f32) -> i32 {
     (v * s + if v >= 0.0 { 0.5 } else { -0.5 }) as i32
@@ -172,10 +183,10 @@ fn decode_color<const S: usize>(data: &mut [u8], count: usize) {
         let ss = max / as_ as f32;
 
         // rounded float->int
-        store(c, 0, (r as f32 * ss + 0.5) as i32);
-        store(c, 1, (g as f32 * ss + 0.5) as i32);
-        store(c, 2, (b as f32 * ss + 0.5) as i32);
-        store(c, 3, (a as f32 * ss + 0.5) as i32);
+        store(c, 0, cvtt(r as f32 * ss + 0.5));
+        store(c, 1, cvtt(g as f32 * ss + 0.5));
+        store(c, 2, cvtt(b as f32 * ss + 0.5));
+        store(c, 3, cvtt(a as f32 * ss + 0.5));
     }
 }
 
