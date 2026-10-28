@@ -18,7 +18,7 @@ simd = []
 workspace = true
 
 [workspace]
-members = ["gltfpack", "clusterlod", "fuzz", "tools"]
+members = ["gltfpack", "clusterlod", "fuzz", "tools", "demo"]
 exclude = ["fuzz/libfuzzer"]
 
 [workspace.lints.rust]

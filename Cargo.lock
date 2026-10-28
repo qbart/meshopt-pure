@@ -52,6 +52,15 @@ name = "meshoptimizer"
 version = "0.1.0"
 
 [[package]]
+name = "meshoptimizer-demo"
+version = "0.1.0"
+dependencies = [
+ "clusterlod",
+ "gltfpack",
+ "meshoptimizer",
+]
+
+[[package]]
 name = "meshoptimizer-fuzz"
 version = "0.1.0"
 dependencies = [
