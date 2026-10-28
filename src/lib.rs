@@ -20,6 +20,7 @@ mod partition;
 mod quantization;
 mod rasterizer;
 mod remesher;
+mod simd;
 mod simplifier;
 mod spatialorder;
 mod stripifier;

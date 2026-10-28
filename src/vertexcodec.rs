@@ -3,7 +3,7 @@
 use core::sync::atomic::{AtomicI32, Ordering};
 
 use crate::error::{Error, Result, ensure};
-use crate::validate;
+use crate::{simd, validate};
 
 const VERTEX_HEADER: u8 = 0xa0;
 
@@ -11,9 +11,9 @@ static ENCODE_VERTEX_VERSION: AtomicI32 = AtomicI32::new(1);
 const DECODE_VERTEX_VERSION: i32 = 1;
 
 const VERTEX_BLOCK_SIZE_BYTES: usize = 8192;
-const VERTEX_BLOCK_MAX_SIZE: usize = 256;
-const BYTE_GROUP_SIZE: usize = 16;
-const BYTE_GROUP_DECODE_LIMIT: usize = 24;
+pub(crate) const VERTEX_BLOCK_MAX_SIZE: usize = 256;
+pub(crate) const BYTE_GROUP_SIZE: usize = 16;
+pub(crate) const BYTE_GROUP_DECODE_LIMIT: usize = 24;
 const TAIL_MIN_SIZE_V0: usize = 32;
 const TAIL_MIN_SIZE_V1: usize = 24;
 
@@ -600,9 +600,9 @@ fn decode_deltas4<const W: usize, const XOR: bool>(
 }
 
 /// Per-call decode buffers, allocated once instead of zeroed for every block (C++: uninitialized stack arrays).
-struct DecodeScratch {
-    buffer: [u8; VERTEX_BLOCK_MAX_SIZE * 4],
-    transposed: [u8; VERTEX_BLOCK_SIZE_BYTES],
+pub(crate) struct DecodeScratch {
+    pub(crate) buffer: [u8; VERTEX_BLOCK_MAX_SIZE * 4],
+    pub(crate) transposed: [u8; VERTEX_BLOCK_SIZE_BYTES],
 }
 
 fn decode_vertex_block(
@@ -884,6 +884,25 @@ pub fn decode_vertex_buffer(
     buffer: &[u8],
     buffer_size: usize,
 ) -> Result<()> {
+    decode_vertex_buffer_with(
+        simd::VertexDecoder::detect(),
+        destination,
+        vertex_count,
+        vertex_size,
+        buffer,
+        buffer_size,
+    )
+}
+
+/// [`decode_vertex_buffer`] with an explicit block decoder (C++: `decode = cpuid ? decodeVertexBlockSimd : decodeVertexBlock`).
+fn decode_vertex_buffer_with(
+    simd: Option<simd::VertexDecoder>,
+    destination: &mut [u8],
+    vertex_count: usize,
+    vertex_size: usize,
+    buffer: &[u8],
+    buffer_size: usize,
+) -> Result<()> {
     validate_vertex_size(vertex_size)?;
     let data = buffer.get(..buffer_size).ok_or(Error::BufferTooSmall("buffer"))?;
     let vertex_data = validate::output(destination, vertex_count * vertex_size)?;
@@ -934,19 +953,32 @@ pub fn decode_vertex_buffer(
         let block_size = vertex_block_size.min(vertex_count - vertex_offset);
 
         let block = &mut vertex_data[vertex_offset * vertex_size..];
-        pos = decode_vertex_block(
-            &mut scratch,
-            data,
-            pos,
-            data_end,
-            block,
-            block_size,
-            vertex_size,
-            &mut last_vertex,
-            channels,
-            version,
-        )
-        .ok_or(Error::Decode(-2))?;
+        let decoded = match simd {
+            Some(simd) => simd.decode_vertex_block(
+                &mut scratch,
+                data,
+                pos,
+                block,
+                block_size,
+                vertex_size,
+                &mut last_vertex,
+                channels,
+                version,
+            ),
+            None => decode_vertex_block(
+                &mut scratch,
+                data,
+                pos,
+                data_end,
+                block,
+                block_size,
+                vertex_size,
+                &mut last_vertex,
+                channels,
+                version,
+            ),
+        };
+        pos = decoded.ok_or(Error::Decode(-2))?;
 
         vertex_offset += block_size;
     }
@@ -956,4 +988,70 @@ pub fn decode_vertex_buffer(
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The SIMD block decoder must match the scalar one byte for byte, on valid and corrupted streams.
+    #[test]
+    fn simd_matches_scalar() {
+        let Some(simd) = simd::VertexDecoder::detect() else {
+            return;
+        };
+
+        let mut seed = 0x9e3779b9u32;
+        let mut next = move || {
+            seed ^= seed << 13;
+            seed ^= seed >> 17;
+            seed ^= seed << 5;
+            seed
+        };
+
+        for &vertex_size in &[4usize, 8, 12, 16, 20, 32, 64, 128, 256] {
+            for &vertex_count in &[1usize, 15, 16, 17, 100, 255, 256, 257, 1000] {
+                // smooth data with noise so every channel and bit width shows up
+                let vertices: Vec<u8> = (0..vertex_count * vertex_size)
+                    .map(|i| {
+                        let (v, b) = (i / vertex_size, i % vertex_size);
+                        let smooth = (v * (b + 1) / 3) as u32;
+                        (smooth ^ (next() >> (28 - (b % 8) * 3))) as u8
+                    })
+                    .collect();
+
+                for (version, level) in [(0, 2), (1, 0), (1, 1), (1, 2), (1, 3)] {
+                    let bound = encode_vertex_buffer_bound(vertex_count, vertex_size).unwrap_or(0);
+                    let mut encoded = vec![0u8; bound];
+                    let size =
+                        encode_vertex_buffer_level(&mut encoded, bound, &vertices, vertex_count, vertex_size, level, version).unwrap_or(0);
+                    assert!(size > 0);
+                    encoded.truncate(size);
+
+                    let mut corrupt = encoded.clone();
+                    for _ in 0..4 {
+                        let at = next() as usize % corrupt.len();
+                        corrupt[at] ^= 1 << (next() % 8);
+                    }
+
+                    for stream in [&encoded, &corrupt] {
+                        let mut a = vec![0u8; vertex_count * vertex_size];
+                        let mut b = vec![0u8; vertex_count * vertex_size];
+                        let ra = decode_vertex_buffer_with(None, &mut a, vertex_count, vertex_size, stream, stream.len());
+                        let rb = decode_vertex_buffer_with(Some(simd), &mut b, vertex_count, vertex_size, stream, stream.len());
+
+                        if stream == &encoded {
+                            assert_eq!((ra, rb), (Ok(()), Ok(())));
+                            assert_eq!(a, vertices);
+                        }
+
+                        // C++ SIMD checks literal runs against the aligned count, so errors may differ on corrupt data
+                        if ra.is_ok() && rb.is_ok() {
+                            assert_eq!(a, b, "size {vertex_size} count {vertex_count} v{version} l{level}");
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

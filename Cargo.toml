@@ -5,6 +5,11 @@ edition = "2024"
 license = "MIT"
 description = "Pure Rust port of meshoptimizer (https://github.com/zeux/meshoptimizer)"
 
+[features]
+default = ["simd"]
+# SIMD decoders with runtime CPU detection (the only `unsafe` in the crate, see docs/spec/38-simd.md)
+simd = []
+
 [dependencies]
 
 [dev-dependencies]
