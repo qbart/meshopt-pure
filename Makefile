@@ -7,6 +7,13 @@ AARCH64_ENV := CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=$(CROSS)/zig-cc-aa
 	CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUNNER=$(CROSS)/qemu/usr/bin/qemu-aarch64-static \
 	CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-C link-self-contained=no"
 
+# Wasm testing under wasmtime (scripts/setup-cross-wasm.sh); the repository and ref/cross/wasi-tmp (as /tmp) are mapped
+# into the sandbox. gltfpack is excluded: its ktx-rs dependency doesn't build for 32-bit targets.
+WASM := wasm32-wasip1
+WASM_RUNNER := $(CROSS)/wasmtime-v26.0.1-x86_64-linux/wasmtime run --dir $(CURDIR)::$(CURDIR) --dir $(CROSS)/wasi-tmp::/tmp --
+WASM_ENV := CARGO_TARGET_WASM32_WASIP1_RUNNER="$(WASM_RUNNER)"
+WASM_SIMD := CARGO_TARGET_WASM32_WASIP1_RUSTFLAGS="-C target-feature=+simd128"
+
 # codecbench flags/inputs, e.g. make codecbench ARGS=-v
 ARGS ?=
 
@@ -18,7 +25,7 @@ SEED ?= 0
 FUZZ_TIME ?= 600
 FUZZ_MAX_LEN ?= 8192
 
-.PHONY: codecbench codecbench-scalar codectest cross-setup test-aarch64 fuzz-aarch64 fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
+.PHONY: codecbench codecbench-scalar codectest cross-setup test-aarch64 fuzz-aarch64 test-wasm fuzz-wasm fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
 	libfuzzer $(addprefix libfuzzer-,$(FUZZ_TARGETS)) fuzz-setup
 
 fuzz: $(addprefix fuzz-,$(FUZZ_TARGETS))
@@ -52,6 +59,7 @@ codecbench-scalar:
 
 cross-setup:
 	scripts/setup-cross-aarch64.sh
+	scripts/setup-cross-wasm.sh
 
 # NEON paths, then the scalar fallback
 test-aarch64:
@@ -60,3 +68,11 @@ test-aarch64:
 
 fuzz-aarch64:
 	$(AARCH64_ENV) cargo run -p meshoptimizer-fuzz --release --target $(AARCH64) --bin fuzz -- codec $(ITERATIONS) $(SEED)
+
+# simd128 paths, then the scalar build
+test-wasm:
+	$(WASM_ENV) $(WASM_SIMD) cargo test --workspace --exclude gltfpack --release --target $(WASM)
+	$(WASM_ENV) cargo test --workspace --exclude gltfpack --release --target $(WASM)
+
+fuzz-wasm:
+	$(WASM_ENV) $(WASM_SIMD) cargo run -p meshoptimizer-fuzz --release --target $(WASM) --bin fuzz -- codec $(ITERATIONS) $(SEED)
