@@ -59,6 +59,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "meshoptimizer-tools"
+version = "0.1.0"
+dependencies = [
+ "meshoptimizer",
+]
+
+[[package]]
 name = "miniz_oxide"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

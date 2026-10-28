@@ -13,7 +13,7 @@ description = "Pure Rust port of meshoptimizer (https://github.com/zeux/meshopti
 workspace = true
 
 [workspace]
-members = ["gltfpack", "clusterlod", "fuzz"]
+members = ["gltfpack", "clusterlod", "fuzz", "tools"]
 exclude = ["fuzz/libfuzzer"]
 
 [workspace.lints.rust]

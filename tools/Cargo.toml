@@ -1,0 +1,13 @@
+[package]
+name = "meshoptimizer-tools"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Ports of meshoptimizer tools/ (codecbench)"
+
+[dependencies]
+meshoptimizer = { path = ".." }
+
+[lints]
+workspace = true
