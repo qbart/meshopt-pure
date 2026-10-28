@@ -1,5 +1,8 @@
 FUZZ_TARGETS := codec simplify cluster
 
+# codecbench flags/inputs, e.g. make codecbench ARGS=-v
+ARGS ?=
+
 # pure Rust mutation driver (stable)
 ITERATIONS ?= 1000000
 SEED ?= 0
@@ -8,7 +11,7 @@ SEED ?= 0
 FUZZ_TIME ?= 600
 FUZZ_MAX_LEN ?= 8192
 
-.PHONY: fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
+.PHONY: codecbench fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
 	libfuzzer $(addprefix libfuzzer-,$(FUZZ_TARGETS)) fuzz-setup
 
 fuzz: $(addprefix fuzz-,$(FUZZ_TARGETS))
@@ -28,3 +31,6 @@ $(addprefix libfuzzer-,$(FUZZ_TARGETS)): libfuzzer-%:
 fuzz-setup:
 	rustup toolchain install nightly --profile minimal
 	cargo install cargo-fuzz --locked
+
+codecbench:
+	cargo run -p meshoptimizer-tools --release --bin codecbench -- $(ARGS)
