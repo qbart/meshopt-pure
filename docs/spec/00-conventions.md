@@ -19,8 +19,11 @@ Reference: `ref/meshopt` (zeux/meshoptimizer, v1.3, commit `f0a684f`). Not versi
 - Decoders returning C status codes return `Err(Error::Decode(code))` with the original negative code.
 
 ## Memory
-- Temporary storage uses `Vec`. `meshopt_setAllocator`/`meshopt_setAllocatorCache` are pending a human decision
-  (custom raw allocators require `unsafe`).
+- Temporary storage uses `Vec`; it is released when the call returns (RAII), same lifetime as the C temporaries.
+- `meshopt_setAllocator`/`meshopt_setAllocatorCache` are **not ported** (human decision, 2026-10-28): raw allocator
+  callbacks need `unsafe`; Rust users customise allocation via `#[global_allocator]`. The C tests `customAllocator`
+  and `customAllocatorCache` are therefore not applicable. Same choice as the bindings crate `meshopt`, which exposes
+  `setAllocator` only as a raw `unsafe` FFI symbol.
 
 ## Numerics
 - Only scalar code paths are ported (SIMD paths need `unsafe` intrinsics); outputs must be bit-identical.
