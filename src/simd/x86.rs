@@ -1,13 +1,16 @@
 //! x86-64 SIMD paths (`SIMD_SSE`): vertex block decoding with SSSE3 + POPCNT (`decodeVertexBlockSimd`, with
-//! `SIMD_LATENCYOPT`) and vertex filter decoding with SSE2 (`decodeFilter*Simd`).
+//! `SIMD_LATENCYOPT`), vertex filter decoding with SSE2 (`decodeFilter*Simd`) and meshlet decoding with SSE4.1
+//! (`decodeMeshletSimd`).
 
 use std::arch::x86_64::*;
 
+use crate::index::IndexType;
+use crate::meshletcodec::MeshletTriangleType;
 use crate::vertexcodec::{BYTE_GROUP_DECODE_LIMIT, BYTE_GROUP_SIZE, DecodeScratch, VERTEX_BLOCK_MAX_SIZE};
 
 /// 16 bytes into a register; compiles to `movdqu`.
 #[inline]
-#[target_feature(enable = "ssse3,popcnt")]
+#[target_feature(enable = "sse2")]
 fn load16(b: &[u8; 16]) -> __m128i {
     let (c, _) = b.as_chunks::<8>();
     _mm_unpacklo_epi64(
@@ -18,7 +21,7 @@ fn load16(b: &[u8; 16]) -> __m128i {
 
 /// Register into 16 bytes; compiles to `movdqu`.
 #[inline]
-#[target_feature(enable = "ssse3,popcnt")]
+#[target_feature(enable = "sse2")]
 fn store16(o: &mut [u8; 16], v: __m128i) {
     let (c, _) = o.as_chunks_mut::<8>();
     c[0] = _mm_cvtsi128_si64(v).to_le_bytes();
@@ -436,19 +439,7 @@ fn dispatch<const S: usize>(data: &mut [u8], count: usize, process: impl Fn(&mut
 #[inline]
 #[target_feature(enable = "sse2")]
 fn loadps(b: &[u8; 16]) -> __m128 {
-    let (c, _) = b.as_chunks::<8>();
-    _mm_castsi128_ps(_mm_unpacklo_epi64(
-        _mm_cvtsi64_si128(i64::from_le_bytes(c[0])),
-        _mm_cvtsi64_si128(i64::from_le_bytes(c[1])),
-    ))
-}
-
-#[inline]
-#[target_feature(enable = "sse2")]
-fn storesi(o: &mut [u8; 16], v: __m128i) {
-    let (c, _) = o.as_chunks_mut::<8>();
-    c[0] = _mm_cvtsi128_si64(v).to_le_bytes();
-    c[1] = _mm_cvtsi128_si64(_mm_unpackhi_epi64(v, v)).to_le_bytes();
+    _mm_castsi128_ps(load16(b))
 }
 
 /// `count` elements of 8 bytes as blocks of 4 elements, each split into two 16-byte halves.
@@ -498,7 +489,7 @@ fn decode_oct8(data: &mut [u8], count: usize) {
         res = _mm_or_si128(res, _mm_slli_epi32::<8>(_mm_and_si128(yr, _mm_set1_epi32(0xff))));
         res = _mm_or_si128(res, _mm_slli_epi32::<16>(_mm_and_si128(zr, _mm_set1_epi32(0xff))));
 
-        storesi(block, res);
+        store16(block, res);
     }
 }
 
@@ -555,8 +546,8 @@ fn decode_oct16(data: &mut [u8], count: usize) {
         res_0 = _mm_or_si128(res_0, _mm_and_si128(_mm_castps_si128(n4_0), maskw));
         res_1 = _mm_or_si128(res_1, _mm_and_si128(_mm_castps_si128(n4_1), maskw));
 
-        storesi(b0, res_0);
-        storesi(b1, res_1);
+        store16(b0, res_0);
+        store16(b1, res_1);
     }
 }
 
@@ -616,8 +607,8 @@ fn decode_quat(data: &mut [u8], count: usize) {
         let res_1 = _mm_unpackhi_epi16(wyr, xzr);
 
         let mut res = [[0u8; 16]; 2];
-        storesi(&mut res[0], res_0);
-        storesi(&mut res[1], res_1);
+        store16(&mut res[0], res_0);
+        store16(&mut res[1], res_1);
 
         // rotate and store
         let outs = b0.as_chunks_mut::<8>().0.iter_mut().chain(b1.as_chunks_mut::<8>().0);
@@ -643,7 +634,7 @@ fn decode_exp(data: &mut [u8], count: usize) {
 
         let r = _mm_mul_ps(_mm_castsi128_ps(es), m);
 
-        storesi(block, _mm_castps_si128(r));
+        store16(block, _mm_castps_si128(r));
     }
 }
 
@@ -688,7 +679,7 @@ fn decode_color8(data: &mut [u8], count: usize) {
         res = _mm_or_si128(res, _mm_slli_epi32::<16>(br));
         res = _mm_or_si128(res, _mm_slli_epi32::<24>(ar));
 
-        storesi(block, res);
+        store16(block, res);
     }
 }
 
@@ -738,8 +729,8 @@ fn decode_color16(data: &mut [u8], count: usize) {
         let gar = _mm_or_si128(_mm_and_si128(gr, _mm_set1_epi32(0xffff)), _mm_slli_epi32::<16>(ar));
 
         // pack r/g/b/a using 16-bit unpacks
-        storesi(b0, _mm_unpacklo_epi16(rbr, gar));
-        storesi(b1, _mm_unpackhi_epi16(rbr, gar));
+        store16(b0, _mm_unpacklo_epi16(rbr, gar));
+        store16(b1, _mm_unpackhi_epi16(rbr, gar));
     }
 }
 
@@ -778,5 +769,266 @@ impl FilterDecoder {
         } else {
             dispatch::<8>(data, count, |d, c| unsafe { decode_color16(d, c) });
         }
+    }
+}
+
+/// `kDecodeTableMasks` / `kDecodeTableExtra`: for each pair of 4-bit triangle codes, the shuffle (bytes 6..16) and
+/// per-byte `next` increments (bytes 0..6) that roll the 16-byte state forward by two triangles, and the extra bytes
+/// consumed. State layout: 0..5 next extra bytes, 6..14 three triangles of index data, 15 the `next` index.
+const TRIANGLE_TABLES: ([[u8; 16]; 256], [u8; 256]) = {
+    let mut masks = [[0u8; 16]; 256];
+    let mut extras = [0u8; 256];
+
+    let mut code = 0;
+    while code < 256 {
+        let mut shuf = [0u8; 16];
+        let mut next = [0u8; 16];
+        let mut extra = 0u8;
+        let mut nextoff = 0u8;
+
+        // state 0..5 will be refilled every iteration, so we ignore that
+        // state 6..8 will always contain the last decoded triangle because every triangle shifts fifo equally, so we can decode it independently
+        shuf[6] = 12;
+        shuf[7] = 13;
+        shuf[8] = 14;
+
+        // state 15 will contain next (potentially incremented a few times)
+        shuf[15] = 15;
+
+        // NEXT(var, ec): the vertex comes from extra (ec) or from next
+        macro_rules! next_or_extra {
+            ($var:expr, $ec:expr) => {
+                let ec = $ec;
+                shuf[$var] = if ec { extra } else { 15 };
+                next[$var] = if ec { 0 } else { nextoff };
+                extra += ec as u8;
+                nextoff += 1 - ec as u8;
+            };
+        }
+
+        // state 9..11 will contain the first decoded triangle (tri0), which can refer to extra/next and the original triangle history
+        // state 12..14 will contain the second decoded triangle (tri1); when decoding edge reuse, we need to handle edge 0/1 specially as it was just decoded earlier
+        let mut k = 0;
+        while k < 2 {
+            let tri = (code >> (k * 4)) & 0xf;
+
+            if tri < 12 {
+                if k == 1 && tri / 4 == 0 {
+                    // we need to decode one of two edges from the triangle we just decoded earlier
+                    // for that we simply need to copy shuf/next values for the two decoded indices
+                    let a = 9 + if tri & 2 != 0 { 2 } else { 0 };
+                    let b = 9 + if tri & 2 != 0 { 1 } else { 2 };
+                    shuf[9 + k * 3] = shuf[a];
+                    next[9 + k * 3] = next[a];
+                    shuf[10 + k * 3] = shuf[b];
+                    next[10 + k * 3] = next[b];
+                } else {
+                    // reuse: edge comes from the history based on edge index
+                    // note: we reuse with an offset because last triangle in the original history was consumed by tri0
+                    let trioff = (6 + k * 3 + (2 - tri / 4) * 3) as u8;
+
+                    // edge cb or ac
+                    shuf[9 + k * 3] = trioff + if tri & 2 != 0 { 2 } else { 0 };
+                    shuf[10 + k * 3] = trioff + if tri & 2 != 0 { 1 } else { 2 };
+                }
+
+                // third vertex is either next or comes from extra
+                next_or_extra!(11 + k * 3, tri & 1 != 0);
+            } else {
+                // restart: three vertices, each comes from next or extra
+                next_or_extra!(9 + k * 3, tri > 12);
+                next_or_extra!(10 + k * 3, tri > 13);
+                next_or_extra!(11 + k * 3, tri > 14);
+            }
+
+            k += 1;
+        }
+
+        // next needs to advance
+        next[15] = nextoff;
+
+        // next[0..8] = 0 trivially (never written to); next[9] must also be 0 because nextoff is 0 initially
+        // shuf[0..5] is not used, which allows us to pack next[10..15] + shuf[6..15] into a single 16-byte entry
+        let mut i = 0;
+        while i < 6 {
+            masks[code][i] = next[10 + i];
+            i += 1;
+        }
+        while i < 16 {
+            masks[code][i] = shuf[i];
+            i += 1;
+        }
+        extras[code] = extra;
+
+        code += 1;
+    }
+
+    (masks, extras)
+};
+
+/// `kDecodeTableVerts` / `kDecodeTableLength`: for each control byte of 4 vertex references (2-bit lengths of 0..3
+/// bytes, or 4 bytes each for 0xff), the shuffle that unpacks them into 32-bit lanes and the bytes consumed.
+const VERTEX_TABLES: ([[u8; 16]; 256], [u8; 256]) = {
+    let mut verts = [[0u8; 16]; 256];
+    let mut lengths = [0u8; 256];
+
+    let mut i = 0usize;
+    while i < 256 {
+        let mut offset = 0u8;
+        let mut k = 0;
+        while k < 4 {
+            let code = ((i >> k) & 1) | ((i >> (k + 3)) & 2);
+            let length = if i == 0xff { 4 } else { code as u8 };
+
+            let mut j = 0;
+            while j < 4 {
+                verts[i][k * 4 + j] = if length > j as u8 { offset + j as u8 } else { 0x80 };
+                j += 1;
+            }
+
+            offset += length;
+            k += 1;
+        }
+
+        lengths[i] = offset;
+        i += 1;
+    }
+
+    (verts, lengths)
+};
+
+/// `decodeTriangleGroup`
+#[inline]
+#[target_feature(enable = "sse4.1")]
+fn decode_triangle_group(state: __m128i, code: u8, extra: &[u8; 8]) -> __m128i {
+    let shuf = load16(&TRIANGLE_TABLES.0[usize::from(code)]);
+    let next = _mm_slli_si128::<10>(shuf);
+
+    // patch first 6 bytes with current extra and roll state forward
+    let ext = _mm_cvtsi64_si128(i64::from_le_bytes(*extra));
+    let state = _mm_blend_epi16::<7>(state, ext);
+    _mm_add_epi8(_mm_shuffle_epi8(state, shuf), next)
+}
+
+/// `decodeVertexGroup`
+#[inline]
+#[target_feature(enable = "sse4.1")]
+fn decode_vertex_group(last: __m128i, code: u8, data: &[u8; 16]) -> __m128i {
+    let word = load16(data);
+    let shuf = load16(&VERTEX_TABLES.0[usize::from(code)]);
+
+    let v = _mm_shuffle_epi8(word, shuf);
+
+    // unzigzag+1
+    let xl = _mm_sub_epi32(_mm_setzero_si128(), _mm_and_si128(v, _mm_set1_epi32(1)));
+    let xr = _mm_srli_epi32::<1>(v);
+    let mut x = _mm_add_epi32(_mm_xor_si128(xl, xr), _mm_set1_epi32(1));
+
+    // prefix sum
+    x = _mm_add_epi32(x, _mm_slli_si128::<8>(x));
+    x = _mm_add_epi32(x, _mm_slli_si128::<4>(x));
+    _mm_add_epi32(x, _mm_shuffle_epi32::<0xff>(last))
+}
+
+/// `decodeTrianglesSimd`; tails are written exactly instead of rounding up to 4 bytes (the Rust API takes exactly
+/// `triangle_count` triangles), which leaves the decoded values unchanged.
+#[target_feature(enable = "sse4.1")]
+fn decode_meshlet_triangles<T: MeshletTriangleType>(
+    triangles: &mut [T],
+    codes: &[u8],
+    buffer: &[u8],
+    mut extra: usize,
+    bound: usize,
+    triangle_count: usize,
+) -> Option<usize> {
+    let mut state = _mm_setzero_si128();
+
+    for (i, &code) in codes[..triangle_count.div_ceil(2)].iter().enumerate() {
+
+        // each triangle pair reads <=6 bytes from extra; the gap guarantees 16 bytes of overread past bound
+        if extra > bound {
+            return None;
+        }
+
+        state = decode_triangle_group(state, code, window::<8>(buffer, extra)?);
+        extra += usize::from(TRIANGLE_TABLES.1[usize::from(code)]);
+
+        // state bytes 9..11 and 12..14 hold the two decoded triangles; the last pair may hold a single one
+        let tris = _mm_cvtsi128_si64(_mm_srli_si128::<9>(state)) as u64;
+        T::write_packed(triangles, i * 2, (triangle_count - i * 2).min(2), tris);
+    }
+
+    Some(extra)
+}
+
+/// `decodeVerticesSimd`; tails are written exactly, see [`decode_meshlet_triangles`].
+#[target_feature(enable = "sse4.1")]
+fn decode_meshlet_vertices<V: IndexType>(
+    vertices: &mut [V],
+    ctrl: &[u8],
+    buffer: &[u8],
+    mut data: usize,
+    bound: usize,
+    vertex_count: usize,
+) -> Option<usize> {
+    let mut last = _mm_set1_epi32(-1);
+
+    let (groups, tail) = vertices[..vertex_count].as_chunks_mut::<4>();
+    let tail = (!tail.is_empty()).then_some(tail);
+
+    for (i, out) in groups.iter_mut().map(|g| g.as_mut_slice()).chain(tail).enumerate() {
+        let code = ctrl[i];
+        if data > bound {
+            return None;
+        }
+
+        last = decode_vertex_group(last, code, window::<16>(buffer, data)?);
+        data += usize::from(VERTEX_TABLES.1[usize::from(code)]);
+
+        let mut v = [0u8; 16];
+        store16(&mut v, last);
+
+        for (o, v) in out.iter_mut().zip(v.as_chunks::<4>().0) {
+            *o = V::from_u32(u32::from_le_bytes(*v));
+        }
+    }
+
+    Some(data)
+}
+
+/// Proof that the CPU supports SSE4.1 (C++: cpuid bit 19 checked in `decodeBuildTables`).
+#[derive(Clone, Copy)]
+pub(crate) struct MeshletDecoder(());
+
+#[allow(unsafe_code)]
+impl MeshletDecoder {
+    pub(crate) fn detect() -> Option<Self> {
+        is_x86_feature_detected!("sse4.1").then_some(MeshletDecoder(()))
+    }
+
+    pub(crate) fn decode_vertices<V: IndexType>(
+        self,
+        vertices: &mut [V],
+        ctrl: &[u8],
+        buffer: &[u8],
+        data: usize,
+        bound: usize,
+        vertex_count: usize,
+    ) -> Option<usize> {
+        // SAFETY: `self` exists only if `detect` found sse4.1, the feature the callee is compiled for
+        unsafe { decode_meshlet_vertices(vertices, ctrl, buffer, data, bound, vertex_count) }
+    }
+
+    pub(crate) fn decode_triangles<T: MeshletTriangleType>(
+        self,
+        triangles: &mut [T],
+        codes: &[u8],
+        buffer: &[u8],
+        extra: usize,
+        bound: usize,
+        triangle_count: usize,
+    ) -> Option<usize> {
+        // SAFETY: as above
+        unsafe { decode_meshlet_triangles(triangles, codes, buffer, extra, bound, triangle_count) }
     }
 }

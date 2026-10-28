@@ -2,6 +2,7 @@
 
 use crate::error::{Error, Result, ensure};
 use crate::index::IndexType;
+use crate::simd;
 
 type EdgeFifo8 = [[u32; 2]; 8];
 
@@ -18,24 +19,48 @@ pub trait MeshletTriangleType: Copy + sealed::Sealed {
 
     #[doc(hidden)]
     fn write(triangles: &mut [Self], i: usize, fifo: u32);
+
+    /// Writes `n` (1 or 2) triangles starting at triangle `i` from 3 index bytes each, packed little-endian in `tris`.
+    #[doc(hidden)]
+    fn write_packed(triangles: &mut [Self], i: usize, n: usize, tris: u64);
 }
 
 impl MeshletTriangleType for u8 {
     const PER_TRIANGLE: usize = 3;
 
+    #[inline]
     fn write(triangles: &mut [Self], i: usize, fifo: u32) {
         triangles[i * 3] = (fifo >> 8) as u8;
         triangles[i * 3 + 1] = (fifo >> 16) as u8;
         triangles[i * 3 + 2] = (fifo >> 24) as u8;
+    }
+
+    #[inline]
+    fn write_packed(triangles: &mut [Self], i: usize, n: usize, tris: u64) {
+        // constant lengths keep the copies inline
+        let bytes = tris.to_le_bytes();
+        if n == 2 {
+            triangles[i * 3..i * 3 + 6].copy_from_slice(&bytes[..6]);
+        } else {
+            triangles[i * 3..i * 3 + 3].copy_from_slice(&bytes[..3]);
+        }
     }
 }
 
 impl MeshletTriangleType for u32 {
     const PER_TRIANGLE: usize = 1;
 
+    #[inline]
     fn write(triangles: &mut [Self], i: usize, fifo: u32) {
         // output triangle is stored without extra edge vertex (0xcbac => 0xcba)
         triangles[i] = fifo >> 8;
+    }
+
+    #[inline]
+    fn write_packed(triangles: &mut [Self], i: usize, n: usize, tris: u64) {
+        for (k, t) in triangles[i..i + n].iter_mut().enumerate() {
+            *t = (tris >> (k * 24)) as u32 & 0xffffff;
+        }
     }
 }
 
@@ -420,6 +445,7 @@ fn meshlet_layout(vertex_count: usize, triangle_count: usize, buffer_size: usize
 }
 
 fn decode_meshlet_impl<V: IndexType, T: MeshletTriangleType>(
+    simd: Option<simd::MeshletDecoder>,
     vertices: &mut [V],
     vertex_count: usize,
     triangles: &mut [T],
@@ -434,8 +460,17 @@ fn decode_meshlet_impl<V: IndexType, T: MeshletTriangleType>(
         .get_mut(..triangle_count * T::PER_TRIANGLE)
         .ok_or(Error::BufferTooSmall("triangles"))?;
 
-    let data = decode_vertices(vertices, &buffer[ctrl..codes], buffer, 0, bound, vertex_count).ok_or(Error::Decode(-2))?;
-    let data = decode_triangles(triangles, &buffer[codes..], buffer, data, bound, triangle_count).ok_or(Error::Decode(-2))?;
+    let data = match simd {
+        Some(simd) => simd.decode_vertices(vertices, &buffer[ctrl..codes], buffer, 0, bound, vertex_count),
+        None => decode_vertices(vertices, &buffer[ctrl..codes], buffer, 0, bound, vertex_count),
+    };
+    let data = data.ok_or(Error::Decode(-2))?;
+
+    let data = match simd {
+        Some(simd) => simd.decode_triangles(triangles, &buffer[codes..], buffer, data, bound, triangle_count),
+        None => decode_triangles(triangles, &buffer[codes..], buffer, data, bound, triangle_count),
+    };
+    let data = data.ok_or(Error::Decode(-2))?;
 
     if data == bound { Ok(()) } else { Err(Error::Decode(-3)) }
 }
@@ -453,7 +488,15 @@ pub fn decode_meshlet<V: IndexType, T: MeshletTriangleType>(
     buffer: &[u8],
     buffer_size: usize,
 ) -> Result<()> {
-    decode_meshlet_impl(vertices, vertex_count, triangles, triangle_count, buffer, buffer_size)
+    decode_meshlet_impl(
+        simd::MeshletDecoder::detect(),
+        vertices,
+        vertex_count,
+        triangles,
+        triangle_count,
+        buffer,
+        buffer_size,
+    )
 }
 
 /// "Raw" meshlet decoder with 32-bit vertex references and 32-bit packed triangles; see [`decode_meshlet`].
@@ -465,5 +508,93 @@ pub fn decode_meshlet_raw(
     buffer: &[u8],
     buffer_size: usize,
 ) -> Result<()> {
-    decode_meshlet_impl(vertices, vertex_count, triangles, triangle_count, buffer, buffer_size)
+    decode_meshlet_impl(
+        simd::MeshletDecoder::detect(),
+        vertices,
+        vertex_count,
+        triangles,
+        triangle_count,
+        buffer,
+        buffer_size,
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn decode_both<V: IndexType + PartialEq + std::fmt::Debug, T: MeshletTriangleType + Default + PartialEq + std::fmt::Debug>(
+        simd: simd::MeshletDecoder,
+        vertex_count: usize,
+        triangle_count: usize,
+        buffer: &[u8],
+        valid: bool,
+    ) {
+        let mut va = vec![V::default(); vertex_count];
+        let mut vb = vec![V::default(); vertex_count];
+        let mut ta = vec![T::default(); triangle_count * T::PER_TRIANGLE];
+        let mut tb = vec![T::default(); triangle_count * T::PER_TRIANGLE];
+
+        let ra = decode_meshlet_impl(None, &mut va, vertex_count, &mut ta, triangle_count, buffer, buffer.len());
+        let rb = decode_meshlet_impl(Some(simd), &mut vb, vertex_count, &mut tb, triangle_count, buffer, buffer.len());
+
+        if valid {
+            assert_eq!((ra, rb), (Ok(()), Ok(())));
+        }
+
+        // like C++, errors on corrupt data may differ: scalar checks bounds per triangle, SIMD per triangle pair
+        if ra.is_ok() && rb.is_ok() {
+            assert_eq!((va, ta), (vb, tb));
+        }
+    }
+
+    /// The SIMD meshlet decoder must match the scalar one, on valid and corrupted streams, for all output types.
+    #[test]
+    fn simd_matches_scalar() {
+        let Some(simd) = simd::MeshletDecoder::detect() else {
+            return;
+        };
+
+        let mut seed = 0x2545f491u32;
+        let mut next = move || {
+            seed ^= seed << 13;
+            seed ^= seed >> 17;
+            seed ^= seed << 5;
+            seed
+        };
+
+        for round in 0..400 {
+            let vertex_count = 1 + next() as usize % 256;
+            let triangle_count = 1 + next() as usize % 256;
+
+            // strips and fans over local indices so that edge reuse, restarts and extra bytes all occur
+            let triangles: Vec<u8> = (0..triangle_count)
+                .flat_map(|t| {
+                    let base = if next() % 4 == 0 { next() as usize } else { t };
+                    [base, base + 1 + (next() % 2) as usize, base + 2 + (next() % 3) as usize].map(|v| (v % vertex_count) as u8)
+                })
+                .collect();
+            let spread = [1u32, 100, 70000, 1 << 30][round % 4];
+            let vertices: Vec<u32> = (0..vertex_count).map(|_| next() % spread).collect();
+
+            let mut buffer = vec![0u8; encode_meshlet_bound(vertex_count, triangle_count)];
+            let size = buffer.len();
+            let size = encode_meshlet(&mut buffer, size, &vertices, vertex_count, &triangles, triangle_count).unwrap_or(0);
+            assert!(size > 0);
+            buffer.truncate(size);
+
+            let mut corrupt = buffer.clone();
+            for _ in 0..3 {
+                let at = next() as usize % corrupt.len();
+                corrupt[at] ^= 1 << (next() % 8);
+            }
+
+            for (stream, valid) in [(&buffer, true), (&corrupt, false)] {
+                decode_both::<u32, u32>(simd, vertex_count, triangle_count, stream, valid);
+                decode_both::<u32, u8>(simd, vertex_count, triangle_count, stream, valid);
+                decode_both::<u16, u32>(simd, vertex_count, triangle_count, stream, valid);
+                decode_both::<u16, u8>(simd, vertex_count, triangle_count, stream, valid);
+            }
+        }
+    }
 }
