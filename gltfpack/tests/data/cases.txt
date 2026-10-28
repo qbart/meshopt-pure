@@ -1,0 +1,288 @@
+# name | input (relative to this directory) | gltfpack options | output extension
+Box.default.glb | models/Box/Box.glb |  | glb
+Box.c.glb | models/Box/Box.glb | -c | glb
+Box.cc.glb | models/Box/Box.glb | -cc | glb
+Box.cz.glb | models/Box/Box.glb | -cz | glb
+Box.noq.glb | models/Box/Box.glb | -noq | glb
+Box.vpf_vtf_vnf_cc.glb | models/Box/Box.glb | -vpf -vtf -vnf -cc | glb
+Box.si0.5_sv.glb | models/Box/Box.glb | -si 0.5 -sv | glb
+Box.si0.3_sa_sp.glb | models/Box/Box.glb | -si 0.3 -sa -sp | glb
+Box.mi_mm.glb | models/Box/Box.glb | -mi -mm | glb
+Box.kn_km_ke.glb | models/Box/Box.glb | -kn -km -ke | glb
+Box.gt_gn30.glb | models/Box/Box.glb | -gt -gn 30 | glb
+Box.vi_cf.glb | models/Box/Box.glb | -vi -cf | glb
+Box.af0_ac.glb | models/Box/Box.glb | -af 0 -ac | glb
+Box.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/Box/Box.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+BoxAnimated.default.glb | models/BoxAnimated/BoxAnimated.glb |  | glb
+BoxAnimated.c.glb | models/BoxAnimated/BoxAnimated.glb | -c | glb
+BoxAnimated.cc.glb | models/BoxAnimated/BoxAnimated.glb | -cc | glb
+BoxAnimated.cz.glb | models/BoxAnimated/BoxAnimated.glb | -cz | glb
+BoxAnimated.noq.glb | models/BoxAnimated/BoxAnimated.glb | -noq | glb
+BoxAnimated.vpf_vtf_vnf_cc.glb | models/BoxAnimated/BoxAnimated.glb | -vpf -vtf -vnf -cc | glb
+BoxAnimated.si0.5_sv.glb | models/BoxAnimated/BoxAnimated.glb | -si 0.5 -sv | glb
+BoxAnimated.si0.3_sa_sp.glb | models/BoxAnimated/BoxAnimated.glb | -si 0.3 -sa -sp | glb
+BoxAnimated.mi_mm.glb | models/BoxAnimated/BoxAnimated.glb | -mi -mm | glb
+BoxAnimated.kn_km_ke.glb | models/BoxAnimated/BoxAnimated.glb | -kn -km -ke | glb
+BoxAnimated.gt_gn30.glb | models/BoxAnimated/BoxAnimated.glb | -gt -gn 30 | glb
+BoxAnimated.vi_cf.glb | models/BoxAnimated/BoxAnimated.glb | -vi -cf | glb
+BoxAnimated.af0_ac.glb | models/BoxAnimated/BoxAnimated.glb | -af 0 -ac | glb
+BoxAnimated.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/BoxAnimated/BoxAnimated.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+BoxVertexColors.default.glb | models/BoxVertexColors/BoxVertexColors.glb |  | glb
+BoxVertexColors.c.glb | models/BoxVertexColors/BoxVertexColors.glb | -c | glb
+BoxVertexColors.cc.glb | models/BoxVertexColors/BoxVertexColors.glb | -cc | glb
+BoxVertexColors.cz.glb | models/BoxVertexColors/BoxVertexColors.glb | -cz | glb
+BoxVertexColors.noq.glb | models/BoxVertexColors/BoxVertexColors.glb | -noq | glb
+BoxVertexColors.vpf_vtf_vnf_cc.glb | models/BoxVertexColors/BoxVertexColors.glb | -vpf -vtf -vnf -cc | glb
+BoxVertexColors.si0.5_sv.glb | models/BoxVertexColors/BoxVertexColors.glb | -si 0.5 -sv | glb
+BoxVertexColors.si0.3_sa_sp.glb | models/BoxVertexColors/BoxVertexColors.glb | -si 0.3 -sa -sp | glb
+BoxVertexColors.mi_mm.glb | models/BoxVertexColors/BoxVertexColors.glb | -mi -mm | glb
+BoxVertexColors.kn_km_ke.glb | models/BoxVertexColors/BoxVertexColors.glb | -kn -km -ke | glb
+BoxVertexColors.gt_gn30.glb | models/BoxVertexColors/BoxVertexColors.glb | -gt -gn 30 | glb
+BoxVertexColors.vi_cf.glb | models/BoxVertexColors/BoxVertexColors.glb | -vi -cf | glb
+BoxVertexColors.af0_ac.glb | models/BoxVertexColors/BoxVertexColors.glb | -af 0 -ac | glb
+BoxVertexColors.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/BoxVertexColors/BoxVertexColors.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+AnimatedMorphCube.default.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb |  | glb
+AnimatedMorphCube.c.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -c | glb
+AnimatedMorphCube.cc.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -cc | glb
+AnimatedMorphCube.cz.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -cz | glb
+AnimatedMorphCube.noq.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -noq | glb
+AnimatedMorphCube.vpf_vtf_vnf_cc.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -vpf -vtf -vnf -cc | glb
+AnimatedMorphCube.si0.5_sv.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -si 0.5 -sv | glb
+AnimatedMorphCube.si0.3_sa_sp.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -si 0.3 -sa -sp | glb
+AnimatedMorphCube.mi_mm.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -mi -mm | glb
+AnimatedMorphCube.kn_km_ke.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -kn -km -ke | glb
+AnimatedMorphCube.gt_gn30.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -gt -gn 30 | glb
+AnimatedMorphCube.vi_cf.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -vi -cf | glb
+AnimatedMorphCube.af0_ac.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -af 0 -ac | glb
+AnimatedMorphCube.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/AnimatedMorphCube/AnimatedMorphCube.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+Cameras.default.glb | models/Cameras/Cameras.gltf |  | glb
+Cameras.c.glb | models/Cameras/Cameras.gltf | -c | glb
+Cameras.cc.glb | models/Cameras/Cameras.gltf | -cc | glb
+Cameras.cz.glb | models/Cameras/Cameras.gltf | -cz | glb
+Cameras.noq.glb | models/Cameras/Cameras.gltf | -noq | glb
+Cameras.vpf_vtf_vnf_cc.glb | models/Cameras/Cameras.gltf | -vpf -vtf -vnf -cc | glb
+Cameras.si0.5_sv.glb | models/Cameras/Cameras.gltf | -si 0.5 -sv | glb
+Cameras.si0.3_sa_sp.glb | models/Cameras/Cameras.gltf | -si 0.3 -sa -sp | glb
+Cameras.mi_mm.glb | models/Cameras/Cameras.gltf | -mi -mm | glb
+Cameras.kn_km_ke.glb | models/Cameras/Cameras.gltf | -kn -km -ke | glb
+Cameras.gt_gn30.glb | models/Cameras/Cameras.gltf | -gt -gn 30 | glb
+Cameras.vi_cf.glb | models/Cameras/Cameras.gltf | -vi -cf | glb
+Cameras.af0_ac.glb | models/Cameras/Cameras.gltf | -af 0 -ac | glb
+Cameras.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/Cameras/Cameras.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+Fox.default.glb | models/Fox/Fox.glb |  | glb
+Fox.c.glb | models/Fox/Fox.glb | -c | glb
+Fox.cc.glb | models/Fox/Fox.glb | -cc | glb
+Fox.cz.glb | models/Fox/Fox.glb | -cz | glb
+Fox.noq.glb | models/Fox/Fox.glb | -noq | glb
+Fox.vpf_vtf_vnf_cc.glb | models/Fox/Fox.glb | -vpf -vtf -vnf -cc | glb
+Fox.si0.5_sv.glb | models/Fox/Fox.glb | -si 0.5 -sv | glb
+Fox.si0.3_sa_sp.glb | models/Fox/Fox.glb | -si 0.3 -sa -sp | glb
+Fox.mi_mm.glb | models/Fox/Fox.glb | -mi -mm | glb
+Fox.kn_km_ke.glb | models/Fox/Fox.glb | -kn -km -ke | glb
+Fox.gt_gn30.glb | models/Fox/Fox.glb | -gt -gn 30 | glb
+Fox.vi_cf.glb | models/Fox/Fox.glb | -vi -cf | glb
+Fox.af0_ac.glb | models/Fox/Fox.glb | -af 0 -ac | glb
+Fox.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/Fox/Fox.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+InterpolationTest.default.glb | models/InterpolationTest/InterpolationTest.glb |  | glb
+InterpolationTest.c.glb | models/InterpolationTest/InterpolationTest.glb | -c | glb
+InterpolationTest.cc.glb | models/InterpolationTest/InterpolationTest.glb | -cc | glb
+InterpolationTest.cz.glb | models/InterpolationTest/InterpolationTest.glb | -cz | glb
+InterpolationTest.noq.glb | models/InterpolationTest/InterpolationTest.glb | -noq | glb
+InterpolationTest.vpf_vtf_vnf_cc.glb | models/InterpolationTest/InterpolationTest.glb | -vpf -vtf -vnf -cc | glb
+InterpolationTest.si0.5_sv.glb | models/InterpolationTest/InterpolationTest.glb | -si 0.5 -sv | glb
+InterpolationTest.si0.3_sa_sp.glb | models/InterpolationTest/InterpolationTest.glb | -si 0.3 -sa -sp | glb
+InterpolationTest.mi_mm.glb | models/InterpolationTest/InterpolationTest.glb | -mi -mm | glb
+InterpolationTest.kn_km_ke.glb | models/InterpolationTest/InterpolationTest.glb | -kn -km -ke | glb
+InterpolationTest.gt_gn30.glb | models/InterpolationTest/InterpolationTest.glb | -gt -gn 30 | glb
+InterpolationTest.vi_cf.glb | models/InterpolationTest/InterpolationTest.glb | -vi -cf | glb
+InterpolationTest.af0_ac.glb | models/InterpolationTest/InterpolationTest.glb | -af 0 -ac | glb
+InterpolationTest.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/InterpolationTest/InterpolationTest.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+MeshPrimitiveModes.default.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf |  | glb
+MeshPrimitiveModes.c.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -c | glb
+MeshPrimitiveModes.cc.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -cc | glb
+MeshPrimitiveModes.cz.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -cz | glb
+MeshPrimitiveModes.noq.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -noq | glb
+MeshPrimitiveModes.vpf_vtf_vnf_cc.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -vpf -vtf -vnf -cc | glb
+MeshPrimitiveModes.si0.5_sv.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -si 0.5 -sv | glb
+MeshPrimitiveModes.si0.3_sa_sp.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -si 0.3 -sa -sp | glb
+MeshPrimitiveModes.mi_mm.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -mi -mm | glb
+MeshPrimitiveModes.kn_km_ke.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -kn -km -ke | glb
+MeshPrimitiveModes.gt_gn30.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -gt -gn 30 | glb
+MeshPrimitiveModes.vi_cf.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -vi -cf | glb
+MeshPrimitiveModes.af0_ac.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -af 0 -ac | glb
+MeshPrimitiveModes.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/MeshPrimitiveModes/MeshPrimitiveModes.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+MorphPrimitivesTest.default.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb |  | glb
+MorphPrimitivesTest.c.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -c | glb
+MorphPrimitivesTest.cc.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -cc | glb
+MorphPrimitivesTest.cz.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -cz | glb
+MorphPrimitivesTest.noq.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -noq | glb
+MorphPrimitivesTest.vpf_vtf_vnf_cc.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -vpf -vtf -vnf -cc | glb
+MorphPrimitivesTest.si0.5_sv.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -si 0.5 -sv | glb
+MorphPrimitivesTest.si0.3_sa_sp.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -si 0.3 -sa -sp | glb
+MorphPrimitivesTest.mi_mm.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -mi -mm | glb
+MorphPrimitivesTest.kn_km_ke.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -kn -km -ke | glb
+MorphPrimitivesTest.gt_gn30.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -gt -gn 30 | glb
+MorphPrimitivesTest.vi_cf.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -vi -cf | glb
+MorphPrimitivesTest.af0_ac.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -af 0 -ac | glb
+MorphPrimitivesTest.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+RiggedSimple.default.glb | models/RiggedSimple/RiggedSimple.glb |  | glb
+RiggedSimple.c.glb | models/RiggedSimple/RiggedSimple.glb | -c | glb
+RiggedSimple.cc.glb | models/RiggedSimple/RiggedSimple.glb | -cc | glb
+RiggedSimple.cz.glb | models/RiggedSimple/RiggedSimple.glb | -cz | glb
+RiggedSimple.noq.glb | models/RiggedSimple/RiggedSimple.glb | -noq | glb
+RiggedSimple.vpf_vtf_vnf_cc.glb | models/RiggedSimple/RiggedSimple.glb | -vpf -vtf -vnf -cc | glb
+RiggedSimple.si0.5_sv.glb | models/RiggedSimple/RiggedSimple.glb | -si 0.5 -sv | glb
+RiggedSimple.si0.3_sa_sp.glb | models/RiggedSimple/RiggedSimple.glb | -si 0.3 -sa -sp | glb
+RiggedSimple.mi_mm.glb | models/RiggedSimple/RiggedSimple.glb | -mi -mm | glb
+RiggedSimple.kn_km_ke.glb | models/RiggedSimple/RiggedSimple.glb | -kn -km -ke | glb
+RiggedSimple.gt_gn30.glb | models/RiggedSimple/RiggedSimple.glb | -gt -gn 30 | glb
+RiggedSimple.vi_cf.glb | models/RiggedSimple/RiggedSimple.glb | -vi -cf | glb
+RiggedSimple.af0_ac.glb | models/RiggedSimple/RiggedSimple.glb | -af 0 -ac | glb
+RiggedSimple.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/RiggedSimple/RiggedSimple.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+SimpleInstancing.default.glb | models/SimpleInstancing/SimpleInstancing.glb |  | glb
+SimpleInstancing.c.glb | models/SimpleInstancing/SimpleInstancing.glb | -c | glb
+SimpleInstancing.cc.glb | models/SimpleInstancing/SimpleInstancing.glb | -cc | glb
+SimpleInstancing.cz.glb | models/SimpleInstancing/SimpleInstancing.glb | -cz | glb
+SimpleInstancing.noq.glb | models/SimpleInstancing/SimpleInstancing.glb | -noq | glb
+SimpleInstancing.vpf_vtf_vnf_cc.glb | models/SimpleInstancing/SimpleInstancing.glb | -vpf -vtf -vnf -cc | glb
+SimpleInstancing.si0.5_sv.glb | models/SimpleInstancing/SimpleInstancing.glb | -si 0.5 -sv | glb
+SimpleInstancing.si0.3_sa_sp.glb | models/SimpleInstancing/SimpleInstancing.glb | -si 0.3 -sa -sp | glb
+SimpleInstancing.mi_mm.glb | models/SimpleInstancing/SimpleInstancing.glb | -mi -mm | glb
+SimpleInstancing.kn_km_ke.glb | models/SimpleInstancing/SimpleInstancing.glb | -kn -km -ke | glb
+SimpleInstancing.gt_gn30.glb | models/SimpleInstancing/SimpleInstancing.glb | -gt -gn 30 | glb
+SimpleInstancing.vi_cf.glb | models/SimpleInstancing/SimpleInstancing.glb | -vi -cf | glb
+SimpleInstancing.af0_ac.glb | models/SimpleInstancing/SimpleInstancing.glb | -af 0 -ac | glb
+SimpleInstancing.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/SimpleInstancing/SimpleInstancing.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+SimpleMorph.default.glb | models/SimpleMorph/SimpleMorph.gltf |  | glb
+SimpleMorph.c.glb | models/SimpleMorph/SimpleMorph.gltf | -c | glb
+SimpleMorph.cc.glb | models/SimpleMorph/SimpleMorph.gltf | -cc | glb
+SimpleMorph.cz.glb | models/SimpleMorph/SimpleMorph.gltf | -cz | glb
+SimpleMorph.noq.glb | models/SimpleMorph/SimpleMorph.gltf | -noq | glb
+SimpleMorph.vpf_vtf_vnf_cc.glb | models/SimpleMorph/SimpleMorph.gltf | -vpf -vtf -vnf -cc | glb
+SimpleMorph.si0.5_sv.glb | models/SimpleMorph/SimpleMorph.gltf | -si 0.5 -sv | glb
+SimpleMorph.si0.3_sa_sp.glb | models/SimpleMorph/SimpleMorph.gltf | -si 0.3 -sa -sp | glb
+SimpleMorph.mi_mm.glb | models/SimpleMorph/SimpleMorph.gltf | -mi -mm | glb
+SimpleMorph.kn_km_ke.glb | models/SimpleMorph/SimpleMorph.gltf | -kn -km -ke | glb
+SimpleMorph.gt_gn30.glb | models/SimpleMorph/SimpleMorph.gltf | -gt -gn 30 | glb
+SimpleMorph.vi_cf.glb | models/SimpleMorph/SimpleMorph.gltf | -vi -cf | glb
+SimpleMorph.af0_ac.glb | models/SimpleMorph/SimpleMorph.gltf | -af 0 -ac | glb
+SimpleMorph.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/SimpleMorph/SimpleMorph.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+SimpleSkin.default.glb | models/SimpleSkin/SimpleSkin.gltf |  | glb
+SimpleSkin.c.glb | models/SimpleSkin/SimpleSkin.gltf | -c | glb
+SimpleSkin.cc.glb | models/SimpleSkin/SimpleSkin.gltf | -cc | glb
+SimpleSkin.cz.glb | models/SimpleSkin/SimpleSkin.gltf | -cz | glb
+SimpleSkin.noq.glb | models/SimpleSkin/SimpleSkin.gltf | -noq | glb
+SimpleSkin.vpf_vtf_vnf_cc.glb | models/SimpleSkin/SimpleSkin.gltf | -vpf -vtf -vnf -cc | glb
+SimpleSkin.si0.5_sv.glb | models/SimpleSkin/SimpleSkin.gltf | -si 0.5 -sv | glb
+SimpleSkin.si0.3_sa_sp.glb | models/SimpleSkin/SimpleSkin.gltf | -si 0.3 -sa -sp | glb
+SimpleSkin.mi_mm.glb | models/SimpleSkin/SimpleSkin.gltf | -mi -mm | glb
+SimpleSkin.kn_km_ke.glb | models/SimpleSkin/SimpleSkin.gltf | -kn -km -ke | glb
+SimpleSkin.gt_gn30.glb | models/SimpleSkin/SimpleSkin.gltf | -gt -gn 30 | glb
+SimpleSkin.vi_cf.glb | models/SimpleSkin/SimpleSkin.gltf | -vi -cf | glb
+SimpleSkin.af0_ac.glb | models/SimpleSkin/SimpleSkin.gltf | -af 0 -ac | glb
+SimpleSkin.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/SimpleSkin/SimpleSkin.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+SimpleSparseAccessor.default.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf |  | glb
+SimpleSparseAccessor.c.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -c | glb
+SimpleSparseAccessor.cc.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -cc | glb
+SimpleSparseAccessor.cz.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -cz | glb
+SimpleSparseAccessor.noq.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -noq | glb
+SimpleSparseAccessor.vpf_vtf_vnf_cc.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -vpf -vtf -vnf -cc | glb
+SimpleSparseAccessor.si0.5_sv.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -si 0.5 -sv | glb
+SimpleSparseAccessor.si0.3_sa_sp.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -si 0.3 -sa -sp | glb
+SimpleSparseAccessor.mi_mm.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -mi -mm | glb
+SimpleSparseAccessor.kn_km_ke.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -kn -km -ke | glb
+SimpleSparseAccessor.gt_gn30.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -gt -gn 30 | glb
+SimpleSparseAccessor.vi_cf.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -vi -cf | glb
+SimpleSparseAccessor.af0_ac.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -af 0 -ac | glb
+SimpleSparseAccessor.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/SimpleSparseAccessor/SimpleSparseAccessor.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+TextureCoordinateTest.default.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb |  | glb
+TextureCoordinateTest.c.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -c | glb
+TextureCoordinateTest.cc.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -cc | glb
+TextureCoordinateTest.cz.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -cz | glb
+TextureCoordinateTest.noq.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -noq | glb
+TextureCoordinateTest.vpf_vtf_vnf_cc.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -vpf -vtf -vnf -cc | glb
+TextureCoordinateTest.si0.5_sv.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -si 0.5 -sv | glb
+TextureCoordinateTest.si0.3_sa_sp.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -si 0.3 -sa -sp | glb
+TextureCoordinateTest.mi_mm.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -mi -mm | glb
+TextureCoordinateTest.kn_km_ke.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -kn -km -ke | glb
+TextureCoordinateTest.gt_gn30.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -gt -gn 30 | glb
+TextureCoordinateTest.vi_cf.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -vi -cf | glb
+TextureCoordinateTest.af0_ac.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -af 0 -ac | glb
+TextureCoordinateTest.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+TextureTransformTest.default.glb | models/TextureTransformTest/TextureTransformTest.gltf |  | glb
+TextureTransformTest.c.glb | models/TextureTransformTest/TextureTransformTest.gltf | -c | glb
+TextureTransformTest.cc.glb | models/TextureTransformTest/TextureTransformTest.gltf | -cc | glb
+TextureTransformTest.cz.glb | models/TextureTransformTest/TextureTransformTest.gltf | -cz | glb
+TextureTransformTest.noq.glb | models/TextureTransformTest/TextureTransformTest.gltf | -noq | glb
+TextureTransformTest.vpf_vtf_vnf_cc.glb | models/TextureTransformTest/TextureTransformTest.gltf | -vpf -vtf -vnf -cc | glb
+TextureTransformTest.si0.5_sv.glb | models/TextureTransformTest/TextureTransformTest.gltf | -si 0.5 -sv | glb
+TextureTransformTest.si0.3_sa_sp.glb | models/TextureTransformTest/TextureTransformTest.gltf | -si 0.3 -sa -sp | glb
+TextureTransformTest.mi_mm.glb | models/TextureTransformTest/TextureTransformTest.gltf | -mi -mm | glb
+TextureTransformTest.kn_km_ke.glb | models/TextureTransformTest/TextureTransformTest.gltf | -kn -km -ke | glb
+TextureTransformTest.gt_gn30.glb | models/TextureTransformTest/TextureTransformTest.gltf | -gt -gn 30 | glb
+TextureTransformTest.vi_cf.glb | models/TextureTransformTest/TextureTransformTest.gltf | -vi -cf | glb
+TextureTransformTest.af0_ac.glb | models/TextureTransformTest/TextureTransformTest.gltf | -af 0 -ac | glb
+TextureTransformTest.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/TextureTransformTest/TextureTransformTest.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+TriangleWithoutIndices.default.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf |  | glb
+TriangleWithoutIndices.c.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -c | glb
+TriangleWithoutIndices.cc.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -cc | glb
+TriangleWithoutIndices.cz.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -cz | glb
+TriangleWithoutIndices.noq.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -noq | glb
+TriangleWithoutIndices.vpf_vtf_vnf_cc.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -vpf -vtf -vnf -cc | glb
+TriangleWithoutIndices.si0.5_sv.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -si 0.5 -sv | glb
+TriangleWithoutIndices.si0.3_sa_sp.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -si 0.3 -sa -sp | glb
+TriangleWithoutIndices.mi_mm.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -mi -mm | glb
+TriangleWithoutIndices.kn_km_ke.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -kn -km -ke | glb
+TriangleWithoutIndices.gt_gn30.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -gt -gn 30 | glb
+TriangleWithoutIndices.vi_cf.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -vi -cf | glb
+TriangleWithoutIndices.af0_ac.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -af 0 -ac | glb
+TriangleWithoutIndices.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/TriangleWithoutIndices/TriangleWithoutIndices.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+AnimatedTriangle.default.glb | models/AnimatedTriangle/AnimatedTriangle.gltf |  | glb
+AnimatedTriangle.c.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -c | glb
+AnimatedTriangle.cc.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -cc | glb
+AnimatedTriangle.cz.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -cz | glb
+AnimatedTriangle.noq.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -noq | glb
+AnimatedTriangle.vpf_vtf_vnf_cc.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -vpf -vtf -vnf -cc | glb
+AnimatedTriangle.si0.5_sv.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -si 0.5 -sv | glb
+AnimatedTriangle.si0.3_sa_sp.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -si 0.3 -sa -sp | glb
+AnimatedTriangle.mi_mm.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -mi -mm | glb
+AnimatedTriangle.kn_km_ke.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -kn -km -ke | glb
+AnimatedTriangle.gt_gn30.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -gt -gn 30 | glb
+AnimatedTriangle.vi_cf.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -vi -cf | glb
+AnimatedTriangle.af0_ac.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -af 0 -ac | glb
+AnimatedTriangle.vp10_vt8_vn12_vc12_at8_ar6_as10.glb | models/AnimatedTriangle/AnimatedTriangle.gltf | -vp 10 -vt 8 -vn 12 -vc 12 -at 8 -ar 6 -as 10 | glb
+Cameras.default.gltf | models/Cameras/Cameras.gltf |  | gltf
+Cameras.c.gltf | models/Cameras/Cameras.gltf | -c | gltf
+Cameras.tr.gltf | models/Cameras/Cameras.gltf | -tr | gltf
+Cameras.cf.gltf | models/Cameras/Cameras.gltf | -cf | gltf
+TextureTransformTest.default.gltf | models/TextureTransformTest/TextureTransformTest.gltf |  | gltf
+TextureTransformTest.c.gltf | models/TextureTransformTest/TextureTransformTest.gltf | -c | gltf
+TextureTransformTest.tr.gltf | models/TextureTransformTest/TextureTransformTest.gltf | -tr | gltf
+TextureTransformTest.cf.gltf | models/TextureTransformTest/TextureTransformTest.gltf | -cf | gltf
+Fox.default.gltf | models/Fox/Fox.glb |  | gltf
+Fox.c.gltf | models/Fox/Fox.glb | -c | gltf
+Fox.tr.gltf | models/Fox/Fox.glb | -tr | gltf
+Fox.cf.gltf | models/Fox/Fox.glb | -cf | gltf
+pirate.default.glb | models/pirate.obj |  | glb
+pirate.cc.glb | models/pirate.obj | -cc | glb
+pirate.si0.5.glb | models/pirate.obj | -si 0.5 | glb
+pirate.noq.glb | models/pirate.obj | -noq | glb
+t1.default.glb | synthetic/t1.obj |  | glb
+t1.cc.glb | synthetic/t1.obj | -cc | glb
+t1.si0.5.glb | synthetic/t1.obj | -si 0.5 | glb
+t1.noq.glb | synthetic/t1.obj | -noq | glb
+crlf.default.glb | synthetic/crlf.obj |  | glb
+crlf.cc.glb | synthetic/crlf.obj | -cc | glb
+crlf.si0.5.glb | synthetic/crlf.obj | -si 0.5 | glb
+crlf.noq.glb | synthetic/crlf.obj | -noq | glb
+noeol.default.glb | synthetic/noeol.obj |  | glb
+noeol.cc.glb | synthetic/noeol.obj | -cc | glb
+noeol.si0.5.glb | synthetic/noeol.obj | -si 0.5 | glb
+noeol.noq.glb | synthetic/noeol.obj | -noq | glb
+b.default.glb | synthetic/b.ply |  | glb
+b.c.glb | synthetic/b.ply | -c | glb
+b.cc.glb | synthetic/b.ply | -cc | glb
+b.noq.glb | synthetic/b.ply | -noq | glb
+b.gsd1.glb | synthetic/b.ply | -gsd 1 | glb
+b.gsd3_cc.glb | synthetic/b.ply | -gsd 3 -cc | glb
+b.si0.5.glb | synthetic/b.ply | -si 0.5 | glb

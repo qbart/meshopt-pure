@@ -1,0 +1,26 @@
+# test
+Kd 0.1 0.2 0.3
+newmtl red
+Ka 0.1 0.1 0.1
+Kd 1 0 0
+Ks 0.5 0.5 0.5
+Ns 10
+Ni 1.45
+d 0.5
+Tr 0.9
+illum 2
+map_Kd tex\red.png
+map_d  alpha.png
+map_bump bump.png
+newmtl  blue  
+Kd 0 0 1
+Tr 0.25
+Tf 0.1 0.2 0.3
+map_Ka -s 1 1 1 amb.png
+map_Ks spec.png
+map_Ns ns.png
+map_Ke e.png
+map_Kt t.png
+map_Ni ni.png
+map_Bump b2.png
+map_Kd tex\red.png

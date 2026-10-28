@@ -37,5 +37,7 @@ modules of the same name. `encodebasis.cpp` → `encodebasis.rs` (ktx-rs). `wasi
 - BasisU (`-tc`/`-tu`) is reported as unavailable until the ktx-rs encoder is wired in; WebP (`-tw`) is unavailable.
 
 ## Verification
-- Golden tests: sample models (versioned under `gltfpack/tests/data/`) packed with several option sets; outputs compared
-  byte-for-byte with files produced by the C++ gltfpack 1.3 (built without BasisU/WebP), stored next to the inputs.
+- `gltfpack/tests/golden.rs`: 287 cases (`tests/data/cases.txt`: 18 Khronos sample models, pirate.obj, OBJ/PLY edge
+  cases x up to 14 option sets, .glb and .gltf output) compared byte-for-byte (all output files + exit code) with
+  `tests/data/expected/`, produced by the C++ gltfpack 1.3 reference via `tests/gen-golden.sh`.
+- Out-of-repo diff runs: 73 sample model files x 35 option sets, plus stdout/stderr, all identical.

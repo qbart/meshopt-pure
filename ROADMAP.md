@@ -54,6 +54,6 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 | micro_ply (`extern/micro_ply.h`) | ✅ | dump-diffed vs C (ASCII/binary/malformed) |
 | parsegltf / parseobj / splats | ✅ | byte-identical output vs C++ gltfpack |
 | mesh / stream / animation / node / material / image | ✅ | byte-identical output vs C++ gltfpack |
-| json / write / fileio / gltfpack (CLI) | ✅ | 73 sample models x 35 option sets identical (files, stdout, stderr, exit code) |
+| json / write / fileio / gltfpack (CLI) | ✅ | 287 golden cases in repo; 73 models x 35 option sets identical out of repo |
 | encodebasis (KTX2 via `qbart/ktx-rs`) | ⬜ | currently reports "built without BasisU support" like C++ without `WITH_BASISU` |
 | encodewebp | ❓ | no pure Rust lossy WebP encoder |
