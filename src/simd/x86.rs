@@ -944,7 +944,6 @@ fn decode_meshlet_triangles<T: MeshletTriangleType>(
     let mut state = _mm_setzero_si128();
 
     for (i, &code) in codes[..triangle_count.div_ceil(2)].iter().enumerate() {
-
         // each triangle pair reads <=6 bytes from extra; the gap guarantees 16 bytes of overread past bound
         if extra > bound {
             return None;
