@@ -9,10 +9,16 @@ description = "Pure Rust port of meshoptimizer (https://github.com/zeux/meshopti
 
 [dev-dependencies]
 
-[lints.rust]
+[lints]
+workspace = true
+
+[workspace]
+members = ["gltfpack"]
+
+[workspace.lints.rust]
 unsafe_code = "deny"
 
-[lints.clippy]
+[workspace.lints.clippy]
 unwrap_used = "deny"
 expect_used = "deny"
 panic = "deny"

@@ -3,5 +3,12 @@
 version = 4
 
 [[package]]
+name = "gltfpack"
+version = "0.1.0"
+dependencies = [
+ "meshoptimizer",
+]
+
+[[package]]
 name = "meshoptimizer"
 version = "0.1.0"

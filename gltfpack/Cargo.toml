@@ -1,0 +1,20 @@
+[package]
+name = "gltfpack"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Pure Rust port of gltfpack (https://github.com/zeux/meshoptimizer/tree/master/gltf)"
+
+[lib]
+name = "gltfpack"
+path = "src/lib.rs"
+
+[[bin]]
+name = "gltfpack"
+path = "src/main.rs"
+
+[dependencies]
+meshoptimizer = { path = ".." }
+
+[lints]
+workspace = true
