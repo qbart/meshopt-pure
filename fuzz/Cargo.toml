@@ -1,0 +1,13 @@
+[package]
+name = "meshoptimizer-fuzz"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Fuzz harnesses for the meshoptimizer port (tools/*fuzz.cpp) with a pure Rust mutation driver"
+
+[dependencies]
+meshoptimizer = { path = ".." }
+
+[lints]
+workspace = true
