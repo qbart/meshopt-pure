@@ -41,11 +41,19 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 
 1. ✅ gltfpack port: done; WebP (`-tw`) deliberately deferred (see below).
 2. ✅ clusterlod (`demo/clusterlod.h`): done (spec 35).
-3. ⬜ fuzz targets (`tools/codecfuzz`, `simplifyfuzz`, `clusterfuzz`) as `cargo-fuzz` targets.
+3. ✅ fuzz harnesses (`tools/codecfuzz`, `simplifyfuzz`, `clusterfuzz`) with a pure Rust mutation driver (spec 36);
+   ❓ libFuzzer/`cargo-fuzz` coverage-guided runs need `libfuzzer-sys` (C++), human decision.
 4. ⬜ codec tools (`tools/codectest`, `codecbench`).
 5. ⬜ demo (`demo/main.cpp`, `nanite.cpp` statistics) as examples. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
 
 ## Tools
+
+### fuzz (`tools/*fuzz.cpp`) — spec `docs/spec/36-fuzz.md`
+
+| Component | Status | Verification |
+|---|---|---|
+| codecfuzz, simplifyfuzz, clusterfuzz harnesses + glibc `rand` | ✅ | smoke runs in `cargo test`; 58M inputs in long runs |
+| coverage-guided fuzzing (libFuzzer) | ❓ | needs `libfuzzer-sys` (C++ dependency) approval |
 
 ### clusterlod (`demo/clusterlod.h`) — spec `docs/spec/35-clusterlod.md`
 
