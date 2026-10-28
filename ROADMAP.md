@@ -44,8 +44,10 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 3. ✅ fuzz harnesses (`tools/codecfuzz`, `simplifyfuzz`, `clusterfuzz`) with a pure Rust mutation driver, plus
    coverage-guided libFuzzer targets in a separate dev-only crate that never reaches the library (spec 36).
 4. ✅ codec tools: `codecbench` (spec 37), `codectest` (spec 39).
-5. ✅ SIMD decoders (x86-64 SSE2/SSSE3/SSE4.1 and AArch64 NEON, runtime detection, default `simd` feature; spec 38).
-   NEON verified under qemu (`make test-aarch64`). ⬜ Wasm SIMD; AVX-512 vertex path skipped (no gain measured).
+5. ✅ SIMD decoders (x86-64 SSE2/SSSE3/SSE4.1, AArch64 NEON, Wasm simd128; default `simd` feature; spec 38).
+   NEON verified under qemu (`make test-aarch64`), Wasm under wasmtime (`make test-wasm`). AVX-512 vertex path skipped
+   (no gain measured). ⬜ Wasm vertex/index decode at 0.79x/0.70x of C++. ❓ gltfpack on Wasm needs a 32-bit fix in
+   `ktx-rs` (`MAX_ALLOC = 1 << 32`).
 6. ⬜ demo (`demo/main.cpp`, `nanite.cpp` statistics) as examples. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
 
 ## Tools
