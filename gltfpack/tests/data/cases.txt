@@ -286,3 +286,21 @@ b.noq.glb | synthetic/b.ply | -noq | glb
 b.gsd1.glb | synthetic/b.ply | -gsd 1 | glb
 b.gsd3_cc.glb | synthetic/b.ply | -gsd 3 -cc | glb
 b.si0.5.glb | synthetic/b.ply | -si 0.5 | glb
+TextureTransformTest.tc.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tc | glb
+TextureTransformTest.tu.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tu | glb
+TextureTransformTest.tc_tq10.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tc -tq 10 | glb
+TextureTransformTest.tu_tq1.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tu -tq 1 | glb
+TextureTransformTest.tc_tfy.gltf | models/TextureTransformTest/TextureTransformTest.gltf | -tc -tfy | gltf
+TextureCoordinateTest.tc_ts0.25.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -tc -ts 0.25 | glb
+TextureCoordinateTest.tu_tl64_tp.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -tu -tl 64 -tp | glb
+InterpolationTest.tc_tp_tl128.glb | models/InterpolationTest/InterpolationTest.glb | -tc -tp -tl 128 | glb
+MorphPrimitivesTest.tc_tl64.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -tc -tl 64 | glb
+MorphPrimitivesTest.tu_tl64.glb | models/MorphPrimitivesTest/MorphPrimitivesTest.glb | -tu -tl 64 | glb
+Fox.tc_tl128_tq5.glb | models/Fox/Fox.glb | -tc -tl 128 -tq 5 | glb
+Fox.tu_tl64.glb | models/Fox/Fox.glb | -tu -tl 64 | glb
+tex.tc.glb | synthetic/tex/tex.gltf | -tc | glb
+tex.tu.glb | synthetic/tex/tex.gltf | -tu | glb
+tex.tc_tfy_ts0.5.glb | synthetic/tex/tex.gltf | -tc -tfy -ts 0.5 | glb
+tex.tu_normal_tc_color_tq8.glb | synthetic/tex/tex.gltf | -tu normal -tc color -tq 8 | glb
+tex.tc_tp_tl4.glb | synthetic/tex/tex.gltf | -tc -tp -tl 4 | glb
+tex.tc_tj2.gltf | synthetic/tex/tex.gltf | -tc -tj 2 | gltf
