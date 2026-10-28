@@ -1,0 +1,38 @@
+# libFuzzer (C++) entry points for the harnesses in `meshoptimizer-fuzz`.
+# Standalone workspace, excluded from the root one: the library and its users never build or depend on it.
+[package]
+name = "meshoptimizer-libfuzzer"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+meshoptimizer-fuzz = { path = ".." }
+
+[workspace]
+
+[[bin]]
+name = "codec"
+path = "fuzz_targets/codec.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "simplify"
+path = "fuzz_targets/simplify.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "cluster"
+path = "fuzz_targets/cluster.rs"
+test = false
+doc = false
+bench = false
