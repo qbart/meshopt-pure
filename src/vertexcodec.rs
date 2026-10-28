@@ -483,45 +483,56 @@ fn encode_vertex_block(
 }
 
 /// Decodes one byte group; reads at most `BYTE_GROUP_DECODE_LIMIT` bytes from `data[pos..]`.
-fn decode_bytes_group(data: &[u8], pos: usize, buffer: &mut [u8], bits: i32) -> usize {
-    match bits {
-        0 => {
-            buffer[..BYTE_GROUP_SIZE].fill(0);
-            pos
+/// One byte group with `BITS` (1, 2 or 4) bits per value; values equal to the sentinel `(1 << BITS) - 1` are read from
+/// the variable-length tail. `window` holds the group's [`BYTE_GROUP_DECODE_LIMIT`] bytes; returns bytes consumed.
+#[inline(always)]
+fn decode_bytes_group_bits<const BITS: u32>(window: &[u8; BYTE_GROUP_DECODE_LIMIT], buffer: &mut [u8; BYTE_GROUP_SIZE]) -> usize {
+    let per_byte = (8 / BITS) as usize;
+    let fixed = BYTE_GROUP_SIZE / per_byte;
+    let sentinel = ((1u32 << BITS) - 1) as u8;
+
+    let mut data_var = fixed;
+
+    for (b, out) in buffer.as_chunks_mut::<1>().0.chunks_exact_mut(per_byte).enumerate() {
+        let mut byte = window[b];
+
+        // 1-bit groups are stored in reverse bit order
+        if BITS == 1 {
+            byte = reverse_bits_byte(byte);
         }
-        8 => {
-            buffer[..BYTE_GROUP_SIZE].copy_from_slice(&data[pos..pos + BYTE_GROUP_SIZE]);
-            pos + BYTE_GROUP_SIZE
-        }
-        _ => {
-            let bits = bits as u32;
-            let per_byte = 8 / bits as usize;
-            let fixed = BYTE_GROUP_SIZE / per_byte;
-            let sentinel = (1u8 << bits) - 1;
 
-            let mut data_var = pos + fixed;
+        for [o] in out.iter_mut() {
+            let enc = byte >> (8 - BITS);
+            byte = byte.wrapping_shl(BITS);
 
-            for (b, out) in buffer[..BYTE_GROUP_SIZE].chunks_exact_mut(per_byte).enumerate() {
-                let mut byte = data[pos + b];
-
-                // 1-bit groups are stored in reverse bit order
-                if bits == 1 {
-                    byte = reverse_bits_byte(byte);
-                }
-
-                for o in out.iter_mut() {
-                    let enc = byte >> (8 - bits);
-                    byte = byte.wrapping_shl(bits);
-
-                    let encv = data[data_var];
-                    *o = if enc == sentinel { encv } else { enc };
-                    data_var += usize::from(enc == sentinel);
-                }
-            }
-
-            data_var
+            // fixed + 16 sentinels never exceeds the window
+            let encv = window[data_var % BYTE_GROUP_DECODE_LIMIT];
+            *o = if enc == sentinel { encv } else { enc };
+            data_var += usize::from(enc == sentinel);
         }
     }
+
+    data_var
+}
+
+fn decode_bytes_group(data: &[u8], pos: usize, buffer: &mut [u8; BYTE_GROUP_SIZE], bits: i32) -> Option<usize> {
+    let window = data.get(pos..)?.first_chunk::<BYTE_GROUP_DECODE_LIMIT>()?;
+
+    let size = match bits {
+        0 => {
+            buffer.fill(0);
+            0
+        }
+        1 => decode_bytes_group_bits::<1>(window, buffer),
+        2 => decode_bytes_group_bits::<2>(window, buffer),
+        4 => decode_bytes_group_bits::<4>(window, buffer),
+        _ => {
+            buffer.copy_from_slice(&window[..BYTE_GROUP_SIZE]);
+            BYTE_GROUP_SIZE
+        }
+    };
+
+    Some(pos + size)
 }
 
 fn decode_bytes(data: &[u8], mut pos: usize, data_end: usize, buffer: &mut [u8], buffer_size: usize, bits: &[i32]) -> Option<usize> {
@@ -534,52 +545,50 @@ fn decode_bytes(data: &[u8], mut pos: usize, data_end: usize, buffer: &mut [u8],
     let header = pos;
     pos += header_size;
 
-    for i in (0..buffer_size).step_by(BYTE_GROUP_SIZE) {
+    for (header_offset, group) in buffer[..buffer_size].as_chunks_mut::<BYTE_GROUP_SIZE>().0.iter_mut().enumerate() {
         if data_end - pos < BYTE_GROUP_DECODE_LIMIT {
             return None;
         }
 
-        let header_offset = i / BYTE_GROUP_SIZE;
         let bitsk = (data[header + header_offset / 4] >> ((header_offset % 4) * 2)) & 3;
 
-        pos = decode_bytes_group(data, pos, &mut buffer[i..], bits[usize::from(bitsk)]);
+        pos = decode_bytes_group(data, pos, group, bits[usize::from(bitsk)])?;
     }
 
     Some(pos)
 }
 
-fn decode_deltas4(
+/// `W`-byte deltas (1, 2 or 4) of one 4-byte channel; `XOR` selects rotated xor deltas over zigzag deltas.
+fn decode_deltas4<const W: usize, const XOR: bool>(
     buffer: &[u8],
     transposed: &mut [u8],
     k: usize,
     vertex_count: usize,
     vertex_size: usize,
     last_vertex: &[u8],
-    width: usize,
-    xor: bool,
     rot: u32,
 ) {
-    let bits = (width * 8) as u32;
+    let bits = (W * 8) as u32;
 
-    for kk in (0..4).step_by(width) {
-        let buffer = &buffer[vertex_count * kk..];
+    for kk in (0..4).step_by(W) {
+        let lanes = &buffer[vertex_count * kk..vertex_count * (kk + W)];
         let mut vertex_offset = k + kk;
 
-        let mut p = read_le(&last_vertex[k + kk..], width);
+        let mut p = read_le(&last_vertex[k + kk..], W);
 
         for i in 0..vertex_count {
             let mut v = 0u32;
-            for j in 0..width {
-                v |= u32::from(buffer[i + vertex_count * j]) << (8 * j);
+            for j in 0..W {
+                v |= u32::from(lanes[i + vertex_count * j]) << (8 * j);
             }
 
-            v = if xor {
+            v = if XOR {
                 v.rotate_left(rot) ^ p
             } else {
                 unzigzag(v, bits).wrapping_add(p) & mask(bits)
             };
 
-            for j in 0..width {
+            for j in 0..W {
                 transposed[vertex_offset + j] = (v >> (j * 8)) as u8;
             }
 
@@ -590,7 +599,14 @@ fn decode_deltas4(
     }
 }
 
+/// Per-call decode buffers, allocated once instead of zeroed for every block (C++: uninitialized stack arrays).
+struct DecodeScratch {
+    buffer: [u8; VERTEX_BLOCK_MAX_SIZE * 4],
+    transposed: [u8; VERTEX_BLOCK_SIZE_BYTES],
+}
+
 fn decode_vertex_block(
+    scratch: &mut DecodeScratch,
     data: &[u8],
     mut pos: usize,
     data_end: usize,
@@ -601,8 +617,7 @@ fn decode_vertex_block(
     channels: Option<&[u8]>,
     version: i32,
 ) -> Option<usize> {
-    let mut buffer = [0u8; VERTEX_BLOCK_MAX_SIZE * 4];
-    let mut transposed = [0u8; VERTEX_BLOCK_SIZE_BYTES];
+    let DecodeScratch { buffer, transposed } = scratch;
 
     let vertex_count_aligned = vertex_count.next_multiple_of(BYTE_GROUP_SIZE);
 
@@ -641,19 +656,12 @@ fn decode_vertex_block(
         let channel = channels.map_or(0, |c| c[k / 4]);
 
         match channel & 3 {
-            0 => decode_deltas4(&buffer, &mut transposed, k, vertex_count, vertex_size, last_vertex, 1, false, 0),
-            1 => decode_deltas4(&buffer, &mut transposed, k, vertex_count, vertex_size, last_vertex, 2, false, 0),
-            2 => decode_deltas4(
-                &buffer,
-                &mut transposed,
-                k,
-                vertex_count,
-                vertex_size,
-                last_vertex,
-                4,
-                true,
-                (32 - u32::from(channel >> 4)) & 31,
-            ),
+            0 => decode_deltas4::<1, false>(buffer, transposed, k, vertex_count, vertex_size, last_vertex, 0),
+            1 => decode_deltas4::<2, false>(buffer, transposed, k, vertex_count, vertex_size, last_vertex, 0),
+            2 => {
+                let rot = (32 - u32::from(channel >> 4)) & 31;
+                decode_deltas4::<4, true>(buffer, transposed, k, vertex_count, vertex_size, last_vertex, rot)
+            }
             _ => return None, // invalid channel type
         }
     }
@@ -917,12 +925,17 @@ pub fn decode_vertex_buffer(
     let vertex_block_size = get_vertex_block_size(vertex_size);
 
     let mut vertex_offset = 0;
+    let mut scratch = DecodeScratch {
+        buffer: [0; VERTEX_BLOCK_MAX_SIZE * 4],
+        transposed: [0; VERTEX_BLOCK_SIZE_BYTES],
+    };
 
     while vertex_offset < vertex_count {
         let block_size = vertex_block_size.min(vertex_count - vertex_offset);
 
         let block = &mut vertex_data[vertex_offset * vertex_size..];
         pos = decode_vertex_block(
+            &mut scratch,
             data,
             pos,
             data_end,
