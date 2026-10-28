@@ -32,7 +32,7 @@ pub(crate) const GROUP_SHUFFLE: [[u8; 8]; 256] = {
 };
 
 /// `kDecodeBytesGroupCount`: number of set bits of each mask (bytes consumed by a shuffle from `GROUP_SHUFFLE`).
-#[cfg(target_arch = "aarch64")]
+#[cfg(any(target_arch = "aarch64", target_arch = "wasm32"))]
 pub(crate) const GROUP_COUNT: [u8; 256] = {
     let mut table = [0u8; 256];
     let mut mask = 0;
@@ -70,6 +70,7 @@ pub(crate) fn blocks8(data: &mut [u8], count: usize) -> &mut [[[u8; 16]; 2]] {
 /// `kDecodeTableMasks` / `kDecodeTableExtra`: for each pair of 4-bit triangle codes, the shuffle (bytes 6..16) and
 /// per-byte `next` increments (bytes 0..6) that roll the 16-byte state forward by two triangles, and the extra bytes
 /// consumed. State layout: 0..5 next extra bytes, 6..14 three triangles of index data, 15 the `next` index.
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub(crate) const TRIANGLE_TABLES: ([[u8; 16]; 256], [u8; 256]) = {
     let mut masks = [[0u8; 16]; 256];
     let mut extras = [0u8; 256];
@@ -163,6 +164,7 @@ pub(crate) const TRIANGLE_TABLES: ([[u8; 16]; 256], [u8; 256]) = {
 
 /// `kDecodeTableVerts` / `kDecodeTableLength`: for each control byte of 4 vertex references (2-bit lengths of 0..3
 /// bytes, or 4 bytes each for 0xff), the shuffle that unpacks them into 32-bit lanes and the bytes consumed.
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub(crate) const VERTEX_TABLES: ([[u8; 16]; 256], [u8; 256]) = {
     let mut verts = [[0u8; 16]; 256];
     let mut lengths = [0u8; 256];
