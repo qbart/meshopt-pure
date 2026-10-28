@@ -5,7 +5,7 @@ use meshoptimizer::*;
 #[test]
 fn analyze_vertex_cache_basic() -> Result<()> {
     // two triangles sharing an edge: 4 unique vertices, all transformed once
-    let ib = [0, 1, 2, 2, 1, 3];
+    let ib = [0u32, 1, 2, 2, 1, 3];
     let stats = analyze_vertex_cache(&ib, 6, 4, 16, 0, 0)?;
     assert_eq!(stats.vertices_transformed, 4);
     assert_eq!(stats.warps_executed, 1);
@@ -25,13 +25,13 @@ fn analyze_vertex_cache_basic() -> Result<()> {
 
 #[test]
 fn analyze_vertex_fetch_basic() -> Result<()> {
-    let ib = [0, 1, 2, 2, 1, 3];
+    let ib = [0u32, 1, 2, 2, 1, 3];
     let stats = analyze_vertex_fetch(&ib, 6, 4, 16)?;
     assert_eq!(stats.bytes_fetched, 64);
     assert_eq!(stats.overfetch, 1.0);
 
     // vertices 64 bytes apart each touch a separate line
-    let ib = [0, 4, 8];
+    let ib = [0u32, 4, 8];
     let stats = analyze_vertex_fetch(&ib, 3, 9, 16)?;
     assert_eq!(stats.bytes_fetched, 192);
     assert_eq!(stats.overfetch, 4.0);

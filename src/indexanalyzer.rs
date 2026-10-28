@@ -1,4 +1,5 @@
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
@@ -20,7 +21,25 @@ pub struct VertexFetchStatistics {
 
 /// Vertex transform cache analyzer.
 /// Returns cache hit statistics using a simplified FIFO model; results may not match actual GPU performance.
-pub fn analyze_vertex_cache(
+pub fn analyze_vertex_cache<T: IndexType>(
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+    cache_size: u32,
+    warp_size: u32,
+    primgroup_size: u32,
+) -> Result<VertexCacheStatistics> {
+    analyze_vertex_cache_u32(
+        &index::input(indices),
+        index_count,
+        vertex_count,
+        cache_size,
+        warp_size,
+        primgroup_size,
+    )
+}
+
+fn analyze_vertex_cache_u32(
     indices: &[u32],
     index_count: usize,
     vertex_count: usize,
@@ -100,7 +119,16 @@ pub fn analyze_vertex_cache(
 
 /// Vertex fetch cache analyzer.
 /// Returns cache hit statistics using a simplified direct mapped model; results may not match actual GPU performance.
-pub fn analyze_vertex_fetch(indices: &[u32], index_count: usize, vertex_count: usize, vertex_size: usize) -> Result<VertexFetchStatistics> {
+pub fn analyze_vertex_fetch<T: IndexType>(
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+    vertex_size: usize,
+) -> Result<VertexFetchStatistics> {
+    analyze_vertex_fetch_u32(&index::input(indices), index_count, vertex_count, vertex_size)
+}
+
+fn analyze_vertex_fetch_u32(indices: &[u32], index_count: usize, vertex_count: usize, vertex_size: usize) -> Result<VertexFetchStatistics> {
     ensure(
         vertex_size > 0 && vertex_size <= 256,
         Error::InvalidArgument("vertex_size must be in 1..=256"),

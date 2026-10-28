@@ -3,6 +3,7 @@
 // Pedro Sander, Diego Nehab and Joshua Barczak. Fast Triangle Reordering for Vertex Locality and Reduced Overdraw. 2007
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 const CACHE_SIZE_MAX: usize = 16;
@@ -298,12 +299,19 @@ fn optimize_vertex_cache_table(
 /// Vertex transform cache optimizer.
 /// Reorders indices to reduce the number of GPU vertex shader invocations.
 /// `destination` must hold `index_count` entries; see [`optimize_vertex_cache_in_place`] for C in-place mode.
-pub fn optimize_vertex_cache(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize) -> Result<()> {
+pub fn optimize_vertex_cache<T: IndexType>(destination: &mut [T], indices: &[T], index_count: usize, vertex_count: usize) -> Result<()> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        optimize_vertex_cache_u32(destination, &indices, index_count, vertex_count)
+    })
+}
+
+fn optimize_vertex_cache_u32(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize) -> Result<()> {
     optimize_vertex_cache_table(destination, indices, index_count, vertex_count, &VERTEX_SCORE_TABLE)
 }
 
 /// In-place variant of [`optimize_vertex_cache`] (C: `destination == indices`).
-pub fn optimize_vertex_cache_in_place(indices: &mut [u32], index_count: usize, vertex_count: usize) -> Result<()> {
+pub fn optimize_vertex_cache_in_place<T: IndexType>(indices: &mut [T], index_count: usize, vertex_count: usize) -> Result<()> {
     let copy = indices.get(..index_count).ok_or(Error::BufferTooSmall("indices"))?.to_vec();
     optimize_vertex_cache(indices, &copy, index_count, vertex_count)
 }
@@ -311,12 +319,24 @@ pub fn optimize_vertex_cache_in_place(indices: &mut [u32], index_count: usize, v
 /// Vertex transform cache optimizer for strip-like caches.
 /// Produces inferior results to [`optimize_vertex_cache`] from the GPU vertex cache perspective,
 /// but can be used to generate more efficient index buffer compression or triangle strips.
-pub fn optimize_vertex_cache_strip(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize) -> Result<()> {
+pub fn optimize_vertex_cache_strip<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+) -> Result<()> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        optimize_vertex_cache_strip_u32(destination, &indices, index_count, vertex_count)
+    })
+}
+
+fn optimize_vertex_cache_strip_u32(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize) -> Result<()> {
     optimize_vertex_cache_table(destination, indices, index_count, vertex_count, &VERTEX_SCORE_TABLE_STRIP)
 }
 
 /// In-place variant of [`optimize_vertex_cache_strip`] (C: `destination == indices`).
-pub fn optimize_vertex_cache_strip_in_place(indices: &mut [u32], index_count: usize, vertex_count: usize) -> Result<()> {
+pub fn optimize_vertex_cache_strip_in_place<T: IndexType>(indices: &mut [T], index_count: usize, vertex_count: usize) -> Result<()> {
     let copy = indices.get(..index_count).ok_or(Error::BufferTooSmall("indices"))?.to_vec();
     optimize_vertex_cache_strip(indices, &copy, index_count, vertex_count)
 }
@@ -324,7 +344,20 @@ pub fn optimize_vertex_cache_strip_in_place(indices: &mut [u32], index_count: us
 /// Vertex transform cache optimizer for FIFO caches.
 /// Reorders indices to reduce the number of GPU vertex shader invocations; generally takes ~2x less time than [`optimize_vertex_cache`].
 /// `cache_size` should be less than the actual GPU cache size to avoid cache thrashing.
-pub fn optimize_vertex_cache_fifo(
+pub fn optimize_vertex_cache_fifo<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+    cache_size: u32,
+) -> Result<()> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        optimize_vertex_cache_fifo_u32(destination, &indices, index_count, vertex_count, cache_size)
+    })
+}
+
+fn optimize_vertex_cache_fifo_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,
@@ -420,7 +453,12 @@ pub fn optimize_vertex_cache_fifo(
 }
 
 /// In-place variant of [`optimize_vertex_cache_fifo`] (C: `destination == indices`).
-pub fn optimize_vertex_cache_fifo_in_place(indices: &mut [u32], index_count: usize, vertex_count: usize, cache_size: u32) -> Result<()> {
+pub fn optimize_vertex_cache_fifo_in_place<T: IndexType>(
+    indices: &mut [T],
+    index_count: usize,
+    vertex_count: usize,
+    cache_size: u32,
+) -> Result<()> {
     let copy = indices.get(..index_count).ok_or(Error::BufferTooSmall("indices"))?.to_vec();
     optimize_vertex_cache_fifo(indices, &copy, index_count, vertex_count, cache_size)
 }

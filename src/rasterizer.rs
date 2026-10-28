@@ -2,6 +2,7 @@
 // Nicolas Capens. Advanced Rasterization. 2004
 
 use crate::error::Result;
+use crate::index::{self, IndexType};
 use crate::validate;
 
 const VIEWPORT: usize = 256;
@@ -214,7 +215,23 @@ fn rasterize_triangles(buffer: &mut OverdrawBuffer, triangles: &[f32], axis: usi
 
 /// Overdraw analyzer.
 /// Returns overdraw statistics using a software rasterizer; results may not match actual GPU performance.
-pub fn analyze_overdraw(
+pub fn analyze_overdraw<T: IndexType>(
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+) -> Result<OverdrawStatistics> {
+    analyze_overdraw_u32(
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+    )
+}
+
+fn analyze_overdraw_u32(
     indices: &[u32],
     index_count: usize,
     vertex_positions: &[f32],
@@ -253,7 +270,23 @@ pub fn analyze_overdraw(
 
 /// Coverage analyzer.
 /// Returns coverage statistics (ratio of viewport pixels covered from each axis) using a software rasterizer.
-pub fn analyze_coverage(
+pub fn analyze_coverage<T: IndexType>(
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+) -> Result<CoverageStatistics> {
+    analyze_coverage_u32(
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+    )
+}
+
+fn analyze_coverage_u32(
     indices: &[u32],
     index_count: usize,
     vertex_positions: &[f32],

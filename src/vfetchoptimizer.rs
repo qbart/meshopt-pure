@@ -1,9 +1,20 @@
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 /// Generates vertex remap to reduce the amount of GPU memory fetches during vertex processing.
 /// Returns the number of unique vertices; `destination` must hold `vertex_count` entries.
-pub fn optimize_vertex_fetch_remap(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize) -> Result<usize> {
+pub fn optimize_vertex_fetch_remap<T: IndexType>(
+    destination: &mut [u32],
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+) -> Result<usize> {
+    let indices = index::input(indices);
+    optimize_vertex_fetch_remap_u32(destination, &indices, index_count, vertex_count)
+}
+
+fn optimize_vertex_fetch_remap_u32(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize) -> Result<usize> {
     let indices = validate::indices(indices, index_count, vertex_count)?;
     let destination = validate::output(destination, vertex_count)?;
 
@@ -26,7 +37,20 @@ pub fn optimize_vertex_fetch_remap(destination: &mut [u32], indices: &[u32], ind
 /// Reorders vertices and changes indices to reduce the amount of GPU memory fetches during vertex processing.
 /// Returns the number of unique vertices; `destination` must hold `vertex_count * vertex_size` bytes.
 /// Use [`optimize_vertex_fetch_in_place`] when the destination is the vertex buffer itself.
-pub fn optimize_vertex_fetch(
+pub fn optimize_vertex_fetch<T: IndexType>(
+    destination: &mut [u8],
+    indices: &mut [T],
+    index_count: usize,
+    vertices: &[u8],
+    vertex_count: usize,
+    vertex_size: usize,
+) -> Result<usize> {
+    index::output(indices, |indices| {
+        optimize_vertex_fetch_u32(destination, indices, index_count, vertices, vertex_count, vertex_size)
+    })
+}
+
+fn optimize_vertex_fetch_u32(
     destination: &mut [u8],
     indices: &mut [u32],
     index_count: usize,
@@ -68,9 +92,9 @@ pub fn optimize_vertex_fetch(
 }
 
 /// In-place variant of [`optimize_vertex_fetch`] (C: `destination == vertices`).
-pub fn optimize_vertex_fetch_in_place(
+pub fn optimize_vertex_fetch_in_place<T: IndexType>(
     vertices: &mut [u8],
-    indices: &mut [u32],
+    indices: &mut [T],
     index_count: usize,
     vertex_count: usize,
     vertex_size: usize,

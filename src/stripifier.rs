@@ -3,6 +3,7 @@
 // Hugues Hoppe. Optimization of Mesh Locality for Transparent Vertex Caching. 1999
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 fn find_strip_first(buffer: &[[u32; 3]], valence: &[u8], hint: &[u32; 3]) -> usize {
@@ -79,7 +80,20 @@ fn take_triangle(buffer: &mut [[u32; 3]], buffer_size: &mut usize, valence: &mut
 /// Converts a previously vertex cache optimized triangle list to triangle strip, stitching strips using restart index or degenerate triangles.
 /// Returns the number of indices in the resulting strip; `destination` must hold [`stripify_bound`] entries.
 /// `restart_index` should be 0 to use degenerate triangles, or `!0` to use restart indices.
-pub fn stripify(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize, restart_index: u32) -> Result<usize> {
+pub fn stripify<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+    restart_index: T,
+) -> Result<usize> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        stripify_u32(destination, &indices, index_count, vertex_count, restart_index.to_u32())
+    })
+}
+
+fn stripify_u32(destination: &mut [u32], indices: &[u32], index_count: usize, vertex_count: usize, restart_index: u32) -> Result<usize> {
     let bound = stripify_bound(index_count)?;
     let indices = validate::indices(indices, index_count, vertex_count)?;
     let destination = validate::output(destination, bound)?;
@@ -261,7 +275,14 @@ pub fn stripify_bound(index_count: usize) -> Result<usize> {
 
 /// Converts a triangle strip to a triangle list; returns the number of indices in the resulting list.
 /// `destination` must hold [`unstripify_bound`] entries.
-pub fn unstripify(destination: &mut [u32], indices: &[u32], index_count: usize, restart_index: u32) -> Result<usize> {
+pub fn unstripify<T: IndexType>(destination: &mut [T], indices: &[T], index_count: usize, restart_index: T) -> Result<usize> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        unstripify_u32(destination, &indices, index_count, restart_index.to_u32())
+    })
+}
+
+fn unstripify_u32(destination: &mut [u32], indices: &[u32], index_count: usize, restart_index: u32) -> Result<usize> {
     let indices = indices.get(..index_count).ok_or(Error::BufferTooSmall("indices"))?;
     let destination = validate::output(destination, if index_count < 3 { 0 } else { (index_count - 2) * 3 })?;
 

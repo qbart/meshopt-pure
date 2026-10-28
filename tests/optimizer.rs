@@ -4,9 +4,9 @@ use meshoptimizer::*;
 
 #[test]
 fn empty_mesh() -> Result<()> {
-    optimize_vertex_cache(&mut [], &[], 0, 0)?;
-    optimize_vertex_cache_fifo(&mut [], &[], 0, 0, 16)?;
-    optimize_overdraw(&mut [], &[], 0, &[], 0, 12, 1.0)?;
+    optimize_vertex_cache::<u32>(&mut [], &[], 0, 0)?;
+    optimize_vertex_cache_fifo::<u32>(&mut [], &[], 0, 0, 16)?;
+    optimize_overdraw::<u32>(&mut [], &[], 0, &[], 0, 12, 1.0)?;
     Ok(())
 }
 

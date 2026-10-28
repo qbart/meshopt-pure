@@ -2,6 +2,7 @@
 // Pedro Sander, Diego Nehab and Joshua Barczak. Fast Triangle Reordering for Vertex Locality and Reduced Overdraw. 2007
 
 use crate::error::{Error, Result};
+use crate::index::{self, IndexType};
 use crate::quantization::quantize_unorm;
 use crate::validate;
 
@@ -261,7 +262,30 @@ fn generate_soft_boundaries(
 /// Reorders indices to reduce the number of GPU vertex shader invocations and the pixel overdraw.
 /// `indices` must have been optimized for vertex cache. `threshold` is the allowed ACMR degradation (1.05 = up to 5% worse).
 /// See [`optimize_overdraw_in_place`] for C in-place mode.
-pub fn optimize_overdraw(
+pub fn optimize_overdraw<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    threshold: f32,
+) -> Result<()> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        optimize_overdraw_u32(
+            destination,
+            &indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+            threshold,
+        )
+    })
+}
+
+fn optimize_overdraw_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,
@@ -340,8 +364,8 @@ pub fn optimize_overdraw(
 }
 
 /// In-place variant of [`optimize_overdraw`] (C: `destination == indices`).
-pub fn optimize_overdraw_in_place(
-    indices: &mut [u32],
+pub fn optimize_overdraw_in_place<T: IndexType>(
+    indices: &mut [T],
     index_count: usize,
     vertex_positions: &[f32],
     vertex_count: usize,
