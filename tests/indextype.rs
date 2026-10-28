@@ -194,10 +194,22 @@ fn analyzers_u16() -> Result<()> {
     let ib16 = narrow(&ib);
     let (vc, ic) = (vertex_count(&vb), ib.len());
 
-    assert_eq!(analyze_vertex_cache(&ib, ic, vc, 16, 32, 32)?, analyze_vertex_cache(&ib16, ic, vc, 16, 32, 32)?);
-    assert_eq!(analyze_vertex_fetch(&ib, ic, vc, STRIDE)?, analyze_vertex_fetch(&ib16, ic, vc, STRIDE)?);
-    assert_eq!(analyze_overdraw(&ib, ic, &vb, vc, STRIDE)?, analyze_overdraw(&ib16, ic, &vb, vc, STRIDE)?);
-    assert_eq!(analyze_coverage(&ib, ic, &vb, vc, STRIDE)?, analyze_coverage(&ib16, ic, &vb, vc, STRIDE)?);
+    assert_eq!(
+        analyze_vertex_cache(&ib, ic, vc, 16, 32, 32)?,
+        analyze_vertex_cache(&ib16, ic, vc, 16, 32, 32)?
+    );
+    assert_eq!(
+        analyze_vertex_fetch(&ib, ic, vc, STRIDE)?,
+        analyze_vertex_fetch(&ib16, ic, vc, STRIDE)?
+    );
+    assert_eq!(
+        analyze_overdraw(&ib, ic, &vb, vc, STRIDE)?,
+        analyze_overdraw(&ib16, ic, &vb, vc, STRIDE)?
+    );
+    assert_eq!(
+        analyze_coverage(&ib, ic, &vb, vc, STRIDE)?,
+        analyze_coverage(&ib16, ic, &vb, vc, STRIDE)?
+    );
     Ok(())
 }
 
@@ -211,7 +223,78 @@ fn u16_narrowing_truncates() -> Result<()> {
 
     // errors leave entries the function didn't write untouched, like the u32 path
     let mut d16 = [7u16; 3];
-    assert_eq!(remap_index_buffer(&mut d16, Some(&[0u16, 5, 2]), 3, &remap), Err(Error::IndexOutOfRange));
+    assert_eq!(
+        remap_index_buffer(&mut d16, Some(&[0u16, 5, 2]), 3, &remap),
+        Err(Error::IndexOutOfRange)
+    );
     assert_eq!(d16[2], 7);
+    Ok(())
+}
+
+#[test]
+fn meshlets_u16() -> Result<()> {
+    let (vb, ib) = grid();
+    let ib16 = narrow(&ib);
+    let (vc, ic) = (vertex_count(&vb), ib.len());
+
+    let (max_vertices, max_triangles) = (16, 16);
+    let bound = build_meshlets_bound(ic, max_vertices, max_triangles)?;
+
+    let run = |build: &dyn Fn(&mut [Meshlet], &mut [u32], &mut [u8]) -> Result<usize>| -> Result<(Vec<Meshlet>, Vec<u32>, Vec<u8>)> {
+        let mut ml = vec![Meshlet::default(); bound];
+        let mut mv = vec![0u32; bound * max_vertices];
+        let mut mt = vec![0u8; bound * max_triangles * 3];
+        let n = build(&mut ml, &mut mv, &mut mt)?;
+        ml.truncate(n);
+        Ok((ml, mv, mt))
+    };
+
+    assert_eq!(
+        run(&|ml, mv, mt| build_meshlets(ml, mv, mt, &ib, ic, &vb, vc, STRIDE, max_vertices, max_triangles, 0.25))?,
+        run(&|ml, mv, mt| build_meshlets(ml, mv, mt, &ib16, ic, &vb, vc, STRIDE, max_vertices, max_triangles, 0.25))?
+    );
+    assert_eq!(
+        run(&|ml, mv, mt| build_meshlets_scan(ml, mv, mt, &ib, ic, vc, max_vertices, max_triangles))?,
+        run(&|ml, mv, mt| build_meshlets_scan(ml, mv, mt, &ib16, ic, vc, max_vertices, max_triangles))?
+    );
+    assert_eq!(
+        run(&|ml, mv, mt| build_meshlets_flex(ml, mv, mt, &ib, ic, &vb, vc, STRIDE, max_vertices, 8, max_triangles, 0.0, 2.0))?,
+        run(&|ml, mv, mt| build_meshlets_flex(ml, mv, mt, &ib16, ic, &vb, vc, STRIDE, max_vertices, 8, max_triangles, 0.0, 2.0))?
+    );
+    assert_eq!(
+        run(&|ml, mv, mt| build_meshlets_spatial(ml, mv, mt, &ib, ic, &vb, vc, STRIDE, max_vertices, 8, max_triangles, 0.0))?,
+        run(&|ml, mv, mt| build_meshlets_spatial(ml, mv, mt, &ib16, ic, &vb, vc, STRIDE, max_vertices, 8, max_triangles, 0.0))?
+    );
+
+    assert_eq!(
+        compute_cluster_bounds(&ib, ic, &vb, vc, STRIDE)?,
+        compute_cluster_bounds(&ib16, ic, &vb, vc, STRIDE)?
+    );
+
+    // one cluster per 12 triangles
+    let counts: Vec<u32> = ib.chunks(36).map(|c| c.len() as u32).collect();
+    let mut p32 = vec![0u32; counts.len()];
+    let mut p16 = vec![0u32; counts.len()];
+    let n32 = partition_clusters(&mut p32, &ib, ic, &counts, counts.len(), Some(&vb), vc, STRIDE, 2)?;
+    let n16 = partition_clusters(&mut p16, &ib16, ic, &counts, counts.len(), Some(&vb), vc, STRIDE, 2)?;
+    assert_eq!((n32, &p32), (n16, &p16));
+    Ok(())
+}
+
+#[test]
+fn spatial_sort_u16() -> Result<()> {
+    let (vb, ib) = grid();
+    let ib16 = narrow(&ib);
+    let (vc, ic) = (vertex_count(&vb), ib.len());
+
+    let mut d32 = vec![0u32; ic];
+    let mut d16 = vec![0u16; ic];
+    spatial_sort_triangles(&mut d32, &ib, ic, &vb, vc, STRIDE)?;
+    spatial_sort_triangles(&mut d16, &ib16, ic, &vb, vc, STRIDE)?;
+    assert_eq!(d32, widen(&d16));
+
+    let mut i16 = ib16.clone();
+    spatial_sort_triangles_in_place(&mut i16, ic, &vb, vc, STRIDE)?;
+    assert_eq!(d32, widen(&i16));
     Ok(())
 }

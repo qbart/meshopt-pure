@@ -2,6 +2,7 @@
 // Fabian Giesen. Decoding Morton codes. 2009
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 // "Insert" two 0 bits after each of the 20 low bits of x
@@ -232,7 +233,28 @@ pub fn spatial_sort_remap(
 /// Spatial sorter.
 /// Reorders triangles for spatial locality, and generates a new index buffer. The resulting index buffer can be used with other functions like optimize_vertex_cache.
 /// `destination` must hold `index_count` entries; see [`spatial_sort_triangles_in_place`] for C in-place mode.
-pub fn spatial_sort_triangles(
+pub fn spatial_sort_triangles<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+) -> Result<()> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        spatial_sort_triangles_u32(
+            destination,
+            &indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+        )
+    })
+}
+
+fn spatial_sort_triangles_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,
@@ -273,8 +295,8 @@ pub fn spatial_sort_triangles(
 }
 
 /// In-place variant of [`spatial_sort_triangles`] (C: `destination == indices`).
-pub fn spatial_sort_triangles_in_place(
-    indices: &mut [u32],
+pub fn spatial_sort_triangles_in_place<T: IndexType>(
+    indices: &mut [T],
     index_count: usize,
     vertex_positions: &[f32],
     vertex_count: usize,

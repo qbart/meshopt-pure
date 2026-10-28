@@ -3,6 +3,7 @@
 // Ingo Wald, Vlastimil Havran. On building fast kd-Trees for Ray Tracing, and on doing that in O(N log N). 2006
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 // We keep a limited number of seed triangles and add a few triangles per finished meshlet
@@ -1027,7 +1028,39 @@ fn validate_meshlet_output<'a>(
 /// Clusters between min and max triangle counts are split when the cluster size would have exceeded the expected cluster size by more than `split_factor`.
 ///
 /// `meshlets` must hold [`build_meshlets_bound`] (using `min_triangles`) entries; `meshlet_vertices` and `meshlet_triangles` must hold `index_count` entries.
-pub fn build_meshlets_flex(
+pub fn build_meshlets_flex<T: IndexType>(
+    meshlets: &mut [Meshlet],
+    meshlet_vertices: &mut [u32],
+    meshlet_triangles: &mut [u8],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    max_vertices: usize,
+    min_triangles: usize,
+    max_triangles: usize,
+    cone_weight: f32,
+    split_factor: f32,
+) -> Result<usize> {
+    build_meshlets_flex_u32(
+        meshlets,
+        meshlet_vertices,
+        meshlet_triangles,
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        max_vertices,
+        min_triangles,
+        max_triangles,
+        cone_weight,
+        split_factor,
+    )
+}
+
+fn build_meshlets_flex_u32(
     meshlets: &mut [Meshlet],
     meshlet_vertices: &mut [u32],
     meshlet_triangles: &mut [u8],
@@ -1250,7 +1283,35 @@ pub fn build_meshlets_flex(
 /// Splits the mesh into a set of meshlets where each meshlet has a micro index buffer indexing into meshlet vertices that refer to the original vertex buffer.
 /// `meshlets` must hold [`build_meshlets_bound`] entries; `meshlet_vertices` and `meshlet_triangles` must hold `index_count` entries.
 /// `cone_weight` should be set to 0 when cone culling is not used, and a value between 0 and 1 otherwise.
-pub fn build_meshlets(
+pub fn build_meshlets<T: IndexType>(
+    meshlets: &mut [Meshlet],
+    meshlet_vertices: &mut [u32],
+    meshlet_triangles: &mut [u8],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    max_vertices: usize,
+    max_triangles: usize,
+    cone_weight: f32,
+) -> Result<usize> {
+    build_meshlets_u32(
+        meshlets,
+        meshlet_vertices,
+        meshlet_triangles,
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        max_vertices,
+        max_triangles,
+        cone_weight,
+    )
+}
+
+fn build_meshlets_u32(
     meshlets: &mut [Meshlet],
     meshlet_vertices: &mut [u32],
     meshlet_triangles: &mut [u8],
@@ -1281,7 +1342,29 @@ pub fn build_meshlets(
 }
 
 /// Meshlet builder that scans the index buffer in order; for maximum efficiency the index buffer has to be optimized for vertex cache first.
-pub fn build_meshlets_scan(
+pub fn build_meshlets_scan<T: IndexType>(
+    meshlets: &mut [Meshlet],
+    meshlet_vertices: &mut [u32],
+    meshlet_triangles: &mut [u8],
+    indices: &[T],
+    index_count: usize,
+    vertex_count: usize,
+    max_vertices: usize,
+    max_triangles: usize,
+) -> Result<usize> {
+    build_meshlets_scan_u32(
+        meshlets,
+        meshlet_vertices,
+        meshlet_triangles,
+        &index::input(indices),
+        index_count,
+        vertex_count,
+        max_vertices,
+        max_triangles,
+    )
+}
+
+fn build_meshlets_scan_u32(
     meshlets: &mut [Meshlet],
     meshlet_vertices: &mut [u32],
     meshlet_triangles: &mut [u8],
@@ -1333,7 +1416,37 @@ pub fn build_meshlets_scan(
 /// Meshlet builder that produces clusters optimized for raytracing.
 /// Splits the mesh into a set of meshlets, similarly to [`build_meshlets`], but optimizes cluster subdivision for raytracing and allows to specify minimum and maximum number of triangles per meshlet.
 /// `meshlets` must hold [`build_meshlets_bound`] (using `min_triangles`) entries. `fill_weight` of 0.5 is a safe default.
-pub fn build_meshlets_spatial(
+pub fn build_meshlets_spatial<T: IndexType>(
+    meshlets: &mut [Meshlet],
+    meshlet_vertices: &mut [u32],
+    meshlet_triangles: &mut [u8],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    max_vertices: usize,
+    min_triangles: usize,
+    max_triangles: usize,
+    fill_weight: f32,
+) -> Result<usize> {
+    build_meshlets_spatial_u32(
+        meshlets,
+        meshlet_vertices,
+        meshlet_triangles,
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        max_vertices,
+        min_triangles,
+        max_triangles,
+        fill_weight,
+    )
+}
+
+fn build_meshlets_spatial_u32(
     meshlets: &mut [Meshlet],
     meshlet_vertices: &mut [u32],
     meshlet_triangles: &mut [u8],

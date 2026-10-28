@@ -4,6 +4,7 @@
 // Thomas Larsson. Fast and Tight Fitting Bounding Spheres. 2008
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::quantization::quantize_snorm;
 use crate::validate;
 
@@ -289,7 +290,23 @@ fn cluster_bounds(indices: &[u32], corners: &[u32], vertex_positions: &[f32], ve
 /// Cluster bounds generator.
 /// Creates bounding volumes that can be used for frustum, backface and occlusion culling.
 /// `vertex_count` is the number of vertices in the entire mesh; `index_count / 3` must be <= 512.
-pub fn compute_cluster_bounds(
+pub fn compute_cluster_bounds<T: IndexType>(
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+) -> Result<Bounds> {
+    compute_cluster_bounds_u32(
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+    )
+}
+
+fn compute_cluster_bounds_u32(
     indices: &[u32],
     index_count: usize,
     vertex_positions: &[f32],

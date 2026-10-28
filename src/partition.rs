@@ -2,6 +2,7 @@
 // Takio Kurita. An efficient agglomerative clustering algorithm using a heap. 1991
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 // To avoid excessive recursion for malformed inputs, we switch to bisection after some depth
@@ -488,7 +489,31 @@ fn merge_spatial(
 ///
 /// `destination` must hold `cluster_count` entries; returns the number of partitions.
 /// `cluster_indices` holds all cluster indices back to back; `cluster_index_counts` holds the number of indices per cluster.
-pub fn partition_clusters(
+pub fn partition_clusters<T: IndexType>(
+    destination: &mut [u32],
+    cluster_indices: &[T],
+    total_index_count: usize,
+    cluster_index_counts: &[u32],
+    cluster_count: usize,
+    vertex_positions: Option<&[f32]>,
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    target_partition_size: usize,
+) -> Result<usize> {
+    partition_clusters_u32(
+        destination,
+        &index::input(cluster_indices),
+        total_index_count,
+        cluster_index_counts,
+        cluster_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        target_partition_size,
+    )
+}
+
+fn partition_clusters_u32(
     destination: &mut [u32],
     cluster_indices: &[u32],
     total_index_count: usize,

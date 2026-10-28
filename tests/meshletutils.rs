@@ -5,11 +5,11 @@ use meshoptimizer::*;
 #[test]
 fn cluster_bounds_degenerate() -> Result<()> {
     let vbd = [0.0f32; 9];
-    let ibd = [0, 0, 0];
-    let ib1 = [0, 1, 2];
+    let ibd = [0u32, 0, 0];
+    let ib1 = [0u32, 1, 2];
 
     // all of the bounds below are degenerate as they use 0 triangles, one topology-degenerate triangle and one position-degenerate triangle respectively
-    let bounds0 = compute_cluster_bounds(&[], 0, &[], 0, 12)?;
+    let bounds0 = compute_cluster_bounds::<u32>(&[], 0, &[], 0, 12)?;
     let boundsd = compute_cluster_bounds(&ibd, 3, &vbd, 3, 12)?;
     let bounds1 = compute_cluster_bounds(&ib1, 3, &vbd, 3, 12)?;
 
@@ -18,7 +18,7 @@ fn cluster_bounds_degenerate() -> Result<()> {
     }
 
     let vb1 = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
-    let ib2 = [0, 1, 2, 0, 2, 1];
+    let ib2 = [0u32, 1, 2, 0, 2, 1];
 
     // these bounds have a degenerate cone since the cluster has two triangles with opposite normals
     let bounds2 = compute_cluster_bounds(&ib2, 6, &vb1, 3, 12)?;

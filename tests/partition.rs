@@ -11,7 +11,7 @@ fn partition_basic() -> Result<()> {
     // 10 11  12
     #[rustfmt::skip]
     let ci = [
-        0, 1, 3, 4, 5, 6,
+        0u32, 1, 3, 4, 5, 6,
         1, 2, 3, 6, 7, 8,
         4, 5, 6, 9, 10, 11,
         6, 7, 8, 9, 11, 12,
@@ -35,7 +35,7 @@ fn partition_basic() -> Result<()> {
 fn partition_spatial() -> Result<()> {
     #[rustfmt::skip]
     let ci = [
-        0, 1, 2,
+        0u32, 1, 2,
         0, 3, 4,
         0, 5, 6,
     ];
@@ -63,7 +63,7 @@ fn partition_spatial() -> Result<()> {
 fn partition_spatial_merge() -> Result<()> {
     #[rustfmt::skip]
     let ci = [
-        0, 1, 2,
+        0u32, 1, 2,
         3, 4, 5,
         6, 7, 8,
     ];

@@ -9,7 +9,7 @@ fn meshlets_empty() -> Result<()> {
     let mut ml = [Meshlet::default(); 1];
     let mut mv = [0u32; 4];
     let mut mt = [0u8; 8];
-    let mc = build_meshlets(&mut ml, &mut mv, &mut mt, &[], 0, &vbd, 4, 4 * 3, 64, 64, 0.0)?;
+    let mc = build_meshlets::<u32>(&mut ml, &mut mv, &mut mt, &[], 0, &vbd, 4, 4 * 3, 64, 64, 0.0)?;
     assert_eq!(mc, 0);
     Ok(())
 }
@@ -201,7 +201,7 @@ fn meshlets_spatial_deep() -> Result<()> {
 #[test]
 fn meshlets_output_too_small() {
     let vbd = [0.0f32; 4 * 3];
-    let ibd = [0, 2, 1, 1, 2, 3];
+    let ibd = [0u32, 2, 1, 1, 2, 3];
 
     let mut ml = [Meshlet::default(); 1];
     let mut mv = [0u32; 3];
