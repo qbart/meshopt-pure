@@ -97,7 +97,7 @@ fn synthetic_runs() -> Result<(), String> {
 
 #[test]
 fn file_mode() -> Result<(), String> {
-    let dir = std::env::temp_dir().join(format!("codecbench-{}", std::process::id()));
+    let dir = meshoptimizer_tools::temp_dir().join(format!("codecbench-{}", meshoptimizer_tools::unique_suffix()));
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
 
     let grid = make_grid(8);

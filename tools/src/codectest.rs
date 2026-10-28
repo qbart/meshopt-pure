@@ -38,9 +38,10 @@ fn fixed(v: f64, precision: usize) -> String {
 
 /// Compressed size of `data` from an external compressor; 0 if it can't run (C++: `system()` failure).
 fn measure(tool: &str, data: &[u8]) -> usize {
-    let dir = std::env::temp_dir();
-    let input: PathBuf = dir.join(format!("codectest-{}.in", std::process::id()));
-    let output: PathBuf = dir.join(format!("codectest-{}.out", std::process::id()));
+    let dir = crate::temp_dir();
+    let suffix = crate::unique_suffix();
+    let input: PathBuf = dir.join(format!("codectest-{suffix}.in"));
+    let output: PathBuf = dir.join(format!("codectest-{suffix}.out"));
 
     if std::fs::write(&input, data).is_err() {
         return 0;

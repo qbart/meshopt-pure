@@ -70,7 +70,7 @@ total: 3 files, raw 0.04 MB, vtx 0.01 MB
 
 #[test]
 fn test_mode_matches_reference() -> std::io::Result<()> {
-    let dir = std::env::temp_dir().join(format!("codectest-{}", std::process::id()));
+    let dir = meshoptimizer_tools::temp_dir().join(format!("codectest-{}", meshoptimizer_tools::unique_suffix()));
     std::fs::create_dir_all(&dir)?;
     let paths = write_files(&dir)?;
 

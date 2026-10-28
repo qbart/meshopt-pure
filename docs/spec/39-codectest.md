@@ -13,7 +13,7 @@ returns the exit code, so tests can drive it in memory.
 
 ## Divergences
 - `lz4`/`zstd` run as external programs through `std::process::Command` (C++: `system()` through `sh`; no C code
-  linked). Temp files are per-process (`codectest-<pid>.in/.out` in the temp dir) instead of fixed `/tmp` names.
+  linked). Temp files get a unique time-based name (`codectest-<suffix>.in/.out` in the temp dir; `process::id` is unsupported on WASI) instead of fixed `/tmp` names.
   A missing tool counts as size 0, as in C++, but without the shell's "not found" message.
 - A file name that doesn't match `v%d_s%d_` prints ` error parsing file name` (C++: assert / undefined behavior).
   The display name is empty when there is no second `_` (C++: null dereference).
