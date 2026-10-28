@@ -21,7 +21,7 @@ fn tangents_basic() -> Result<()> {
 
     // unindexed input: indices == None, vertex_count == index_count
     let mut tangents = [0.0f32; 6 * 4];
-    generate_tangents(
+    generate_tangents::<u32>(
         &mut tangents,
         None,
         6,
@@ -70,7 +70,7 @@ fn tangent_degenerate() -> Result<()> {
     #[rustfmt::skip]
     let indices = [
         // outer, positive
-        0, 3, 1,
+        0u32, 3, 1,
         // inner, degenerate UVs
         0, 1, 2,
         // outer, positive
@@ -135,7 +135,7 @@ fn normals_basic() -> Result<()> {
     ];
 
     // flattened tetrahedron (apex is closer to the base so that we can get soft side edges)
-    let indices = [0, 2, 1, 0, 1, 3, 1, 2, 3, 2, 0, 3];
+    let indices = [0u32, 2, 1, 0, 1, 3, 1, 2, 3, 2, 0, 3];
 
     let mut normals = [0.0f32; 12 * 3];
     generate_normals(&mut normals, Some(&indices), 12, &vertices, 4, 12, 3.14159265 / 3.0, 0.0)?;
@@ -177,7 +177,7 @@ fn normals_degenerate() -> Result<()> {
     ];
 
     // degenerate triangle connects the triangles across a hard edge; corners inherit normals from adjacent triangles
-    let indices = [0, 1, 2, 0, 2, 3, 0, 3, 4];
+    let indices = [0u32, 1, 2, 0, 2, 3, 0, 3, 4];
 
     let mut normals = [0.0f32; 9 * 3];
     generate_normals(&mut normals, Some(&indices), 9, &vertices, 5, 12, 3.14159265 * 3.0 / 4.0, 0.0)?;

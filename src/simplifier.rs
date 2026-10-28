@@ -9,6 +9,7 @@
 
 use crate::error::{Error, Result, ensure};
 use crate::hash::{Hasher, hash_buckets, hash_lookup};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 /// Do not move vertices that are located on the topological border (vertices on triangle edges that don't have a paired triangle). Useful for simplifying portions of the larger mesh.
@@ -2772,7 +2773,36 @@ fn finalize_vertices(
 ///
 /// `target_error` is the error relative to mesh extents that can be tolerated, e.g. 0.01 = 1% deformation (unless [`SIMPLIFY_ERROR_ABSOLUTE`] is used).
 /// `options` is a bitmask of `SIMPLIFY_*` options; 0 is a safe default. `result_error` receives the resulting error when provided.
-pub fn simplify(
+pub fn simplify<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    target_index_count: usize,
+    target_error: f32,
+    options: u32,
+    result_error: Option<&mut f32>,
+) -> Result<usize> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        simplify_u32(
+            destination,
+            &indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+            target_index_count,
+            target_error,
+            options,
+            result_error,
+        )
+    })
+}
+
+fn simplify_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,
@@ -2808,7 +2838,46 @@ pub fn simplify(
 ///
 /// `vertex_attributes` holds `attribute_count` floats per vertex (spaced `vertex_attributes_stride` bytes apart), `attribute_weights` holds
 /// `attribute_count` weights; `attribute_count` must be <= 32. `vertex_lock` can be `None`; otherwise it holds `SIMPLIFY_VERTEX_*` flags per vertex.
-pub fn simplify_with_attributes(
+pub fn simplify_with_attributes<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    vertex_attributes: &[f32],
+    vertex_attributes_stride: usize,
+    attribute_weights: &[f32],
+    attribute_count: usize,
+    vertex_lock: Option<&[u8]>,
+    target_index_count: usize,
+    target_error: f32,
+    options: u32,
+    result_error: Option<&mut f32>,
+) -> Result<usize> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        simplify_with_attributes_u32(
+            destination,
+            &indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+            vertex_attributes,
+            vertex_attributes_stride,
+            attribute_weights,
+            attribute_count,
+            vertex_lock,
+            target_index_count,
+            target_error,
+            options,
+            result_error,
+        )
+    })
+}
+
+fn simplify_with_attributes_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,
@@ -2857,7 +2926,43 @@ pub fn simplify_with_attributes(
 /// Similar to [`simplify_with_attributes`], but destructively updates positions and attribute values for optimal appearance.
 /// Returns the number of indices after simplification; `indices` are destructively updated with new index data.
 /// Attributes with zero weights are not updated.
-pub fn simplify_with_update(
+pub fn simplify_with_update<T: IndexType>(
+    indices: &mut [T],
+    index_count: usize,
+    vertex_positions: &mut [f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    vertex_attributes: &mut [f32],
+    vertex_attributes_stride: usize,
+    attribute_weights: &[f32],
+    attribute_count: usize,
+    vertex_lock: Option<&[u8]>,
+    target_index_count: usize,
+    target_error: f32,
+    options: u32,
+    result_error: Option<&mut f32>,
+) -> Result<usize> {
+    index::output(indices, |indices| {
+        simplify_with_update_u32(
+            indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+            vertex_attributes,
+            vertex_attributes_stride,
+            attribute_weights,
+            attribute_count,
+            vertex_lock,
+            target_index_count,
+            target_error,
+            options,
+            result_error,
+        )
+    })
+}
+
+fn simplify_with_update_u32(
     indices: &mut [u32],
     index_count: usize,
     vertex_positions: &mut [f32],
@@ -2916,7 +3021,43 @@ pub fn simplify_with_update(
 
 /// Variant of [`simplify_with_update`] for interleaved vertex data, where attributes live in the same buffer as positions
 /// starting `vertex_attributes_offset` floats into `vertex_data` (C: `vertex_attributes` aliasing `vertex_positions`).
-pub fn simplify_with_update_interleaved(
+pub fn simplify_with_update_interleaved<T: IndexType>(
+    indices: &mut [T],
+    index_count: usize,
+    vertex_data: &mut [f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    vertex_attributes_offset: usize,
+    vertex_attributes_stride: usize,
+    attribute_weights: &[f32],
+    attribute_count: usize,
+    vertex_lock: Option<&[u8]>,
+    target_index_count: usize,
+    target_error: f32,
+    options: u32,
+    result_error: Option<&mut f32>,
+) -> Result<usize> {
+    index::output(indices, |indices| {
+        simplify_with_update_interleaved_u32(
+            indices,
+            index_count,
+            vertex_data,
+            vertex_count,
+            vertex_positions_stride,
+            vertex_attributes_offset,
+            vertex_attributes_stride,
+            attribute_weights,
+            attribute_count,
+            vertex_lock,
+            target_index_count,
+            target_error,
+            options,
+            result_error,
+        )
+    })
+}
+
+fn simplify_with_update_interleaved_u32(
     indices: &mut [u32],
     index_count: usize,
     vertex_data: &mut [f32],
@@ -2982,7 +3123,36 @@ pub fn simplify_with_update_interleaved(
 /// The algorithm doesn't preserve mesh topology but can stop short of the target goal based on target error.
 /// `vertex_lock` can be `None`; otherwise vertices that can't be moved should set 1 consistently for all indices with the same position.
 /// `target_error` is relative to mesh extents, value range [0..1].
-pub fn simplify_sloppy(
+pub fn simplify_sloppy<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    vertex_lock: Option<&[u8]>,
+    target_index_count: usize,
+    target_error: f32,
+    result_error: Option<&mut f32>,
+) -> Result<usize> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        simplify_sloppy_u32(
+            destination,
+            &indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+            vertex_lock,
+            target_index_count,
+            target_error,
+            result_error,
+        )
+    })
+}
+
+fn simplify_sloppy_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,
@@ -3142,7 +3312,30 @@ pub fn simplify_sloppy(
 /// Mesh simplifier (pruner).
 /// Reduces the number of triangles in the mesh by removing small isolated parts of the mesh.
 /// `destination` must hold `index_count` elements; `target_error` is relative to mesh extents, value range [0..1].
-pub fn simplify_prune(
+pub fn simplify_prune<T: IndexType>(
+    destination: &mut [T],
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    target_error: f32,
+) -> Result<usize> {
+    let indices = index::input(indices);
+    index::output(destination, |destination| {
+        simplify_prune_u32(
+            destination,
+            &indices,
+            index_count,
+            vertex_positions,
+            vertex_count,
+            vertex_positions_stride,
+            target_error,
+        )
+    })
+}
+
+fn simplify_prune_u32(
     destination: &mut [u32],
     indices: &[u32],
     index_count: usize,

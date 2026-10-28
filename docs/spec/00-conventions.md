@@ -9,7 +9,7 @@ Reference: `ref/meshopt` (zeux/meshoptimizer, v1.3, commit `f0a684f`). Not versi
 - Element counts and byte strides are kept as explicit parameters; slices are validated against them.
 - `const void*` vertex data → `&[u8]`; `const float*` positions → `&[f32]` + byte stride (multiple of 4).
 - Optional pointers (`NULL`) → `Option<&[T]>`.
-- Index buffers are `u32`; `u16` variants (C++ template adapters) are tracked separately.
+- Index buffers are generic over `IndexType` (`u16`/`u32`) wherever C++ has a `template <typename T>` wrapper; see `20-index-types.md`.
 - C structs keep their fields (`meshopt_Bounds` → `Bounds`, …).
 
 ## Errors

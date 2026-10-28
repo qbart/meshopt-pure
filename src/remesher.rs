@@ -5,6 +5,7 @@
 use std::sync::OnceLock;
 
 use crate::error::{Error, Result, ensure};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 /// Produce a two-sided shell that wraps around surfaces of the original mesh, instead of a solid mesh.
@@ -740,7 +741,31 @@ fn polygonize(
 ///
 /// `destination` can be `None`; otherwise it must hold `max_triangle_count * 9` floats. When `destination` is `None` or insufficiently
 /// large, the returned value is an upper bound on the number of triangles. `resolution` must be in 4..=256.
-pub fn remesh(
+pub fn remesh<T: IndexType>(
+    destination: Option<&mut [f32]>,
+    max_triangle_count: usize,
+    indices: &[T],
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    resolution: i32,
+    options: u32,
+) -> Result<usize> {
+    remesh_u32(
+        destination,
+        max_triangle_count,
+        &index::input(indices),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        resolution,
+        options,
+    )
+}
+
+fn remesh_u32(
     destination: Option<&mut [f32]>,
     max_triangle_count: usize,
     indices: &[u32],

@@ -29,9 +29,9 @@ Legend: ✅ done · 🚧 in progress · ⬜ todo · ❓ needs human decision · 
 | remesher | ✅ | diff-tested + 1 sanity |
 | opacitymap | ✅ | 3/3 + diff-tested |
 | allocator (`setAllocator`, `setAllocatorCache`) | ➖ not ported | use `#[global_allocator]`; tests N/A |
-| u16 index adapters (C++ templates) | ⬜ | – |
+| u16 index adapters (C++ templates) | ✅ | 9 u16-vs-u32 equivalence tests |
 
-**Status:** all `src/*.cpp` algorithms ported; 125 Rust tests (C `demo/tests.cpp` ports + sanity tests) passing.
+**Status:** all `src/*.cpp` algorithms and C++ `template <typename T>` index wrappers ported; 134 Rust tests (C `demo/tests.cpp` ports + sanity tests) passing.
 Every module was additionally diff-tested bit-for-bit against the C++ reference (pirate.obj, grids, random soups,
 fuzzed codec streams) using an out-of-repo harness (C code is not allowed in this repository).
 
@@ -39,8 +39,7 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 
 ## Next steps
 
-1. ⬜ u16 index support for the remaining APIs (C++ template wrappers `meshopt_*<T>`); codecs already accept `IndexType`.
-2. ⬜ gltfpack port (KTX via `qbart/ktx-rs`; BasisU/WebP/meshopt encoders must be pure Rust).
+1. ⬜ gltfpack port (KTX via `qbart/ktx-rs`; BasisU/WebP/meshopt encoders must be pure Rust).
 
 ## Tools
 

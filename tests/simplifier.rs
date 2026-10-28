@@ -97,7 +97,7 @@ fn simplify_stuck() -> Result<()> {
 #[test]
 fn simplify_sloppy_stuck() -> Result<()> {
     let vb = [0.0f32; 9];
-    let ib = [0, 1, 2, 0, 1, 2];
+    let ib = [0u32, 1, 2, 0, 1, 2];
 
     // simplifying down to 0 triangles results in 0 immediately
     assert_eq!(simplify_sloppy(&mut [], &ib, 3, &vb, 3, 12, None, 0, 0.0, None)?, 0);
@@ -802,7 +802,7 @@ const PRUNE_VB: [f32; 27] = [
 
 #[test]
 fn simplify_prune_cleanup() -> Result<()> {
-    let mut ib = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    let mut ib = [0u32, 1, 2, 3, 4, 5, 6, 7, 8];
 
     let expected = [6, 7, 8];
 
@@ -828,7 +828,7 @@ fn simplify_prune_cleanup() -> Result<()> {
 
 #[test]
 fn simplify_prune_func() -> Result<()> {
-    let mut ib = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    let mut ib = [0u32, 1, 2, 3, 4, 5, 6, 7, 8];
 
     let expected = [6, 7, 8];
 

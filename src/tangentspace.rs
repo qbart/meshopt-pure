@@ -5,6 +5,7 @@
 
 use crate::error::{Error, Result, ensure};
 use crate::hash::{Hasher, hash_buckets, hash_lookup};
+use crate::index::{self, IndexType};
 use crate::validate;
 
 /// Produce tangents compatible with MikkTSpace (same weighting and fallbacks) at the cost of reduced quality. Not recommended unless normal maps are baked.
@@ -528,7 +529,36 @@ fn validate_corners(indices: Option<&[u32]>, index_count: usize, vertex_count: u
 ///
 /// `result` must hold `index_count * 4` floats; `indices` can be `None` if the input is unindexed.
 /// `options` is a combination of [`TANGENT_COMPATIBLE`] and [`TANGENT_ZERO_FALLBACK`].
-pub fn generate_tangents(
+pub fn generate_tangents<T: IndexType>(
+    result: &mut [f32],
+    indices: Option<&[T]>,
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    vertex_normals: &[f32],
+    vertex_normals_stride: usize,
+    vertex_uvs: &[f32],
+    vertex_uvs_stride: usize,
+    options: u32,
+) -> Result<()> {
+    let indices = index::input_opt(indices);
+    generate_tangents_u32(
+        result,
+        indices.as_deref(),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        vertex_normals,
+        vertex_normals_stride,
+        vertex_uvs,
+        vertex_uvs_stride,
+        options,
+    )
+}
+
+fn generate_tangents_u32(
     result: &mut [f32],
     indices: Option<&[u32]>,
     index_count: usize,
@@ -649,7 +679,30 @@ pub fn generate_tangents(
 /// `result` must hold `index_count * 3` floats; `indices` can be `None` if the input is unindexed.
 /// `crease_angle` is the angle in radians below which normals are averaged across edges (0..=pi);
 /// `smoothing` is the amount of smoothing to apply as a post-process (recommended range 0..=5).
-pub fn generate_normals(
+pub fn generate_normals<T: IndexType>(
+    result: &mut [f32],
+    indices: Option<&[T]>,
+    index_count: usize,
+    vertex_positions: &[f32],
+    vertex_count: usize,
+    vertex_positions_stride: usize,
+    crease_angle: f32,
+    smoothing: f32,
+) -> Result<()> {
+    let indices = index::input_opt(indices);
+    generate_normals_u32(
+        result,
+        indices.as_deref(),
+        index_count,
+        vertex_positions,
+        vertex_count,
+        vertex_positions_stride,
+        crease_angle,
+        smoothing,
+    )
+}
+
+fn generate_normals_u32(
     result: &mut [f32],
     indices: Option<&[u32]>,
     index_count: usize,

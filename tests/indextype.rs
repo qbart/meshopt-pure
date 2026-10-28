@@ -301,3 +301,180 @@ fn spatial_sort_u16() -> Result<()> {
     assert_eq!(d32, widen(&i16));
     Ok(())
 }
+
+#[test]
+fn simplifier_u16() -> Result<()> {
+    let (vb, ib) = grid();
+    let ib16 = narrow(&ib);
+    let (vc, ic) = (vertex_count(&vb), ib.len());
+
+    let mut d32 = vec![0u32; ic];
+    let mut d16 = vec![0u16; ic];
+    let (mut e32, mut e16) = (0.0f32, 0.0f32);
+
+    let n32 = simplify(&mut d32, &ib, ic, &vb, vc, STRIDE, ic / 4, 0.5, 0, Some(&mut e32))?;
+    let n16 = simplify(&mut d16, &ib16, ic, &vb, vc, STRIDE, ic / 4, 0.5, 0, Some(&mut e16))?;
+    assert_eq!((n32, &d32[..n32], e32), (n16, &widen(&d16)[..n16], e16));
+    assert!(n32 < ic);
+
+    let attrs = &vb[3..];
+    let weights = [0.5f32, 0.5];
+    let n32 = simplify_with_attributes(
+        &mut d32,
+        &ib,
+        ic,
+        &vb,
+        vc,
+        STRIDE,
+        attrs,
+        STRIDE,
+        &weights,
+        2,
+        None,
+        ic / 4,
+        0.5,
+        0,
+        None,
+    )?;
+    let n16 = simplify_with_attributes(
+        &mut d16,
+        &ib16,
+        ic,
+        &vb,
+        vc,
+        STRIDE,
+        attrs,
+        STRIDE,
+        &weights,
+        2,
+        None,
+        ic / 4,
+        0.5,
+        0,
+        None,
+    )?;
+    assert_eq!((n32, &d32[..n32]), (n16, &widen(&d16)[..n16]));
+
+    let (mut i32b, mut i16b) = (ib.clone(), ib16.clone());
+    let (mut v32, mut v16) = (vb.clone(), vb.clone());
+    let n32 = simplify_with_update_interleaved(
+        &mut i32b,
+        ic,
+        &mut v32,
+        vc,
+        STRIDE,
+        3,
+        STRIDE,
+        &weights,
+        2,
+        None,
+        ic / 4,
+        0.5,
+        0,
+        None,
+    )?;
+    let n16 = simplify_with_update_interleaved(
+        &mut i16b,
+        ic,
+        &mut v16,
+        vc,
+        STRIDE,
+        3,
+        STRIDE,
+        &weights,
+        2,
+        None,
+        ic / 4,
+        0.5,
+        0,
+        None,
+    )?;
+    assert_eq!((n32, &i32b[..n32], &v32), (n16, &widen(&i16b)[..n16], &v16));
+
+    let positions: Vec<f32> = vb.chunks(5).flat_map(|v| [v[0], v[1], v[2]]).collect();
+    let uvs: Vec<f32> = vb.chunks(5).flat_map(|v| [v[3], v[4]]).collect();
+    let (mut p32, mut p16) = (positions.clone(), positions.clone());
+    let (mut u32a, mut u16a) = (uvs.clone(), uvs.clone());
+    let (mut i32b, mut i16b) = (ib.clone(), ib16.clone());
+    let n32 = simplify_with_update(
+        &mut i32b,
+        ic,
+        &mut p32,
+        vc,
+        12,
+        &mut u32a,
+        8,
+        &weights,
+        2,
+        None,
+        ic / 4,
+        0.5,
+        0,
+        None,
+    )?;
+    let n16 = simplify_with_update(
+        &mut i16b,
+        ic,
+        &mut p16,
+        vc,
+        12,
+        &mut u16a,
+        8,
+        &weights,
+        2,
+        None,
+        ic / 4,
+        0.5,
+        0,
+        None,
+    )?;
+    assert_eq!((n32, &i32b[..n32], &p32, &u32a), (n16, &widen(&i16b)[..n16], &p16, &u16a));
+
+    let n32 = simplify_sloppy(&mut d32, &ib, ic, &vb, vc, STRIDE, None, ic / 4, 1.0, Some(&mut e32))?;
+    let n16 = simplify_sloppy(&mut d16, &ib16, ic, &vb, vc, STRIDE, None, ic / 4, 1.0, Some(&mut e16))?;
+    assert_eq!((n32, &d32[..n32], e32), (n16, &widen(&d16)[..n16], e16));
+
+    let n32 = simplify_prune(&mut d32, &ib, ic, &vb, vc, STRIDE, 0.5)?;
+    let n16 = simplify_prune(&mut d16, &ib16, ic, &vb, vc, STRIDE, 0.5)?;
+    assert_eq!((n32, &d32[..n32]), (n16, &widen(&d16)[..n16]));
+    Ok(())
+}
+
+#[test]
+fn tangent_space_u16() -> Result<()> {
+    let (vb, ib) = grid();
+    let ib16 = narrow(&ib);
+    let (vc, ic) = (vertex_count(&vb), ib.len());
+
+    // per-corner outputs
+    let mut n32 = vec![0.0f32; ic * 3];
+    let mut n16 = vec![0.0f32; ic * 3];
+    generate_normals(&mut n32, Some(&ib), ic, &vb, vc, STRIDE, 1.0, 0.0)?;
+    generate_normals(&mut n16, Some(&ib16), ic, &vb, vc, STRIDE, 1.0, 0.0)?;
+    assert_eq!(n32, n16);
+
+    let normals: Vec<f32> = (0..vc).flat_map(|_| [0.0, 0.0, 1.0]).collect();
+    let mut t32 = vec![0.0f32; ic * 4];
+    let mut t16 = vec![0.0f32; ic * 4];
+    generate_tangents(&mut t32, Some(&ib), ic, &vb, vc, STRIDE, &normals, 12, &vb[3..], STRIDE, 0)?;
+    generate_tangents(&mut t16, Some(&ib16), ic, &vb, vc, STRIDE, &normals, 12, &vb[3..], STRIDE, 0)?;
+    assert_eq!(t32, t16);
+    Ok(())
+}
+
+#[test]
+fn remesh_u16() -> Result<()> {
+    let (vb, ib) = grid();
+    let ib16 = narrow(&ib);
+    let (vc, ic) = (vertex_count(&vb), ib.len());
+
+    let count = remesh(None, 0, &ib, ic, &vb, vc, STRIDE, 8, 0)?;
+    assert_eq!(count, remesh(None, 0, &ib16, ic, &vb, vc, STRIDE, 8, 0)?);
+
+    let mut r32 = vec![0.0f32; count * 9];
+    let mut r16 = vec![0.0f32; count * 9];
+    let c32 = remesh(Some(&mut r32), count, &ib, ic, &vb, vc, STRIDE, 8, 0)?;
+    let c16 = remesh(Some(&mut r16), count, &ib16, ic, &vb, vc, STRIDE, 8, 0)?;
+    assert_eq!((c32, &r32), (c16, &r16));
+    Ok(())
+}
