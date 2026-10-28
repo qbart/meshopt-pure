@@ -1,8 +1,9 @@
-//! Vertex buffer filters; only the scalar code paths of the C++ implementation are ported.
+//! Vertex buffer filters: scalar code paths, with the C++ SIMD decoders in `crate::simd` (x86-64 SSE2).
 //! Buffers are byte slices holding little-endian 8/16/32-bit components, like the C `void*` buffers.
 
 use crate::error::{Error, Result, ensure};
 use crate::quantization::{quantize_snorm, quantize_unorm};
+use crate::simd;
 
 /// Exponent sharing mode for [`encode_filter_exp`] (C: `meshopt_EncodeExpMode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -200,10 +201,10 @@ pub fn decode_filter_oct(buffer: &mut [u8], count: usize, stride: usize) -> Resu
     ensure(stride == 4 || stride == 8, Error::InvalidArgument("stride must be 4 or 8"))?;
     validate_buffer(buffer, count, stride)?;
 
-    if stride == 4 {
-        decode_oct::<4>(buffer, count);
-    } else {
-        decode_oct::<8>(buffer, count);
+    match simd::FilterDecoder::detect() {
+        Some(simd) => simd.decode_oct(buffer, count, stride),
+        None if stride == 4 => decode_oct::<4>(buffer, count),
+        None => decode_oct::<8>(buffer, count),
     }
     Ok(())
 }
@@ -214,7 +215,10 @@ pub fn decode_filter_quat(buffer: &mut [u8], count: usize, stride: usize) -> Res
     ensure(stride == 8, Error::InvalidArgument("stride must be 8"))?;
     validate_buffer(buffer, count, stride)?;
 
-    decode_quat(buffer, count);
+    match simd::FilterDecoder::detect() {
+        Some(simd) => simd.decode_quat(buffer, count),
+        None => decode_quat(buffer, count),
+    }
     Ok(())
 }
 
@@ -227,7 +231,10 @@ pub fn decode_filter_exp(buffer: &mut [u8], count: usize, stride: usize) -> Resu
     )?;
     validate_buffer(buffer, count, stride)?;
 
-    decode_exp(buffer, count * (stride / 4));
+    match simd::FilterDecoder::detect() {
+        Some(simd) => simd.decode_exp(buffer, count * (stride / 4)),
+        None => decode_exp(buffer, count * (stride / 4)),
+    }
     Ok(())
 }
 
@@ -237,10 +244,10 @@ pub fn decode_filter_color(buffer: &mut [u8], count: usize, stride: usize) -> Re
     ensure(stride == 4 || stride == 8, Error::InvalidArgument("stride must be 4 or 8"))?;
     validate_buffer(buffer, count, stride)?;
 
-    if stride == 4 {
-        decode_color::<4>(buffer, count);
-    } else {
-        decode_color::<8>(buffer, count);
+    match simd::FilterDecoder::detect() {
+        Some(simd) => simd.decode_color(buffer, count, stride),
+        None if stride == 4 => decode_color::<4>(buffer, count),
+        None => decode_color::<8>(buffer, count),
     }
     Ok(())
 }

@@ -26,3 +26,29 @@ impl VertexDecoder {
         match self {}
     }
 }
+
+/// `decodeFilter*Simd` (SSE2 on x86).
+#[derive(Clone, Copy)]
+pub(crate) enum FilterDecoder {}
+
+impl FilterDecoder {
+    pub(crate) fn detect() -> Option<Self> {
+        None
+    }
+
+    pub(crate) fn decode_oct(self, _data: &mut [u8], _count: usize, _stride: usize) {
+        match self {}
+    }
+
+    pub(crate) fn decode_quat(self, _data: &mut [u8], _count: usize) {
+        match self {}
+    }
+
+    pub(crate) fn decode_exp(self, _data: &mut [u8], _count: usize) {
+        match self {}
+    }
+
+    pub(crate) fn decode_color(self, _data: &mut [u8], _count: usize, _stride: usize) {
+        match self {}
+    }
+}
