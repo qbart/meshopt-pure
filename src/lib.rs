@@ -1,6 +1,9 @@
 //! Pure Rust port of [meshoptimizer](https://github.com/zeux/meshoptimizer).
 #![deny(unsafe_code)]
 
+/// Library version (`MESHOPTIMIZER_VERSION`): major * 1000 + minor * 10.
+pub const MESHOPTIMIZER_VERSION: i32 = 1030;
+
 mod clusterizer;
 mod error;
 mod hash;

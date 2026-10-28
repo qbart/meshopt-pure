@@ -49,10 +49,11 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 |---|---|---|
 | cgltf + jsmn (`extern/cgltf.h`) | ✅ | dump-diffed vs C on samples + 3.5k fuzzed files |
 | printf/strtod helpers (`cstd`) | ✅ | 2M random floats vs glibc |
+| libstdc++ `std::sort`, x86 float casts (`cxx`) | ✅ | 3000 random arrays with ties vs libstdc++ |
 | fast_obj (`extern/fast_obj.h`) | ✅ | dump-diffed vs C (OBJ/MTL edge cases) |
 | micro_ply (`extern/micro_ply.h`) | ✅ | dump-diffed vs C (ASCII/binary/malformed) |
-| parsegltf / parseobj / splats | ⬜ | |
-| mesh / stream / animation / node / material / image | ⬜ | |
-| json / write / fileio / gltfpack (CLI) | ⬜ | |
-| encodebasis (KTX2 via `qbart/ktx-rs`) | ⬜ | |
+| parsegltf / parseobj / splats | ✅ | byte-identical output vs C++ gltfpack |
+| mesh / stream / animation / node / material / image | ✅ | byte-identical output vs C++ gltfpack |
+| json / write / fileio / gltfpack (CLI) | ✅ | 73 sample models x 35 option sets identical (files, stdout, stderr, exit code) |
+| encodebasis (KTX2 via `qbart/ktx-rs`) | ⬜ | currently reports "built without BasisU support" like C++ without `WITH_BASISU` |
 | encodewebp | ❓ | no pure Rust lossy WebP encoder |

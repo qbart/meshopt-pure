@@ -24,6 +24,18 @@ modules of the same name. `encodebasis.cpp` → `encodebasis.rs` (ktx-rs). `wasi
 - `fprintf(stderr, …)`/`printf` messages kept verbatim (tests compare stdout/stderr where relevant).
 - No panics: malformed inputs that are UB in C++ (asserts disabled) return an error instead.
 
+## C++ semantics preserved (`cxx.rs`, `cstd.rs`)
+- `std::min`/`std::max` on floats (NaN order), x86-64 float→int conversions, libstdc++ `std::sort` (introsort;
+  equal bone weights keep the libstdc++ order), glibc `printf("%.9g")`/`atof`/`atoi`.
+- Math via Rust std (`expf`, `powf`, `acosf`, `cosf`, `sinf` resolve to the platform libm like the C++ build).
+
+## Divergences (C++ undefined behavior / crashes only)
+- Malformed PLY (property before element, truncated binary data) → "invalid PLY" instead of crash/garbage.
+- OBJ faces with < 3 vertices (index count wraps, C++ aborts on allocation) are skipped with a warning.
+- Out-of-range OBJ/accessor reads read as zero; failing meshoptimizer calls on asserted-invalid arguments leave
+  the affected stream empty/zeroed.
+- BasisU (`-tc`/`-tu`) is reported as unavailable until the ktx-rs encoder is wired in; WebP (`-tw`) is unavailable.
+
 ## Verification
 - Golden tests: sample models (versioned under `gltfpack/tests/data/`) packed with several option sets; outputs compared
   byte-for-byte with files produced by the C++ gltfpack 1.3 (built without BasisU/WebP), stored next to the inputs.
