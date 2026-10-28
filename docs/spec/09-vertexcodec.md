@@ -9,7 +9,7 @@
 | `meshopt_decodeVertexVersion` | `decode_vertex_version(buffer, buffer_size) -> Result<i32>` |
 | `meshopt_decodeVertexBuffer` | `decode_vertex_buffer(destination: &mut [u8], vertex_count, vertex_size, buffer, buffer_size) -> Result<()>` |
 
-- Scalar decoder (`decodeVertexBlock`), plus the SSSE3 decoder (`decodeVertexBlockSimd`) with runtime detection (spec 38); AVX/NEON/WASM paths not ported.
+- Scalar decoder (`decodeVertexBlock`), plus the SSSE3 and NEON decoders (`decodeVertexBlockSimd`) with runtime detection (spec 38); AVX/WASM paths not ported.
   `MESHOPTIMIZER_VERTEXCODEC_ZEROCOPY` is not supported (always decodes via the transposed scratch block).
 - Generic `encodeDeltas4<T, Xor>`/`decodeDeltas4<T, Xor>` → runtime element width (1/2/4) with masked `u32` math.
 - `TRACE` statistics are not ported.
