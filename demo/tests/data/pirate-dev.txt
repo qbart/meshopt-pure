@@ -1,0 +1,2 @@
+# pirate.obj: 3152 vertices, 5010 triangles; read in 0.84 msec; indexed in 0.44 msec
+Remesh160: 5010 triangles => 78994 triangles in 35.48 msec (count 13.35 msec, compute 22.12 msec)

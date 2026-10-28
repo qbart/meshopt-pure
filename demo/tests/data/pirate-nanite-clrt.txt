@@ -1,0 +1,10 @@
+# pirate.obj: 3152 vertices, 5010 triangles; read in 0.56 msec; indexed in 0.28 msec
+lod 0: 45 clusters (24.4% full, 111.3 tri/cl, 88.1 vtx/cl, 2.00 connected, 5.2 boundary, 15.0 partition, 0 singletons, 0.985 sah overhead, 0.122800 radius), 5010 triangles
+lod 1: 23 clusters (13.0% full, 108.8 tri/cl, 91.5 vtx/cl, 2.13 connected, 2.9 boundary, 11.5 partition, 0 singletons, 0.986 sah overhead, 0.610135 radius), 2502 triangles
+lod 2: 12 clusters (16.7% full, 104.1 tri/cl, 94.6 vtx/cl, 2.67 connected, 0.0 boundary, 12.0 partition, 0 singletons, 0.971 sah overhead, 0.772464 radius), 1249 triangles
+lod 3: 6 clusters (16.7% full, 104.0 tri/cl, 108.2 vtx/cl, 3.17 connected, 0.0 boundary, 6.0 partition, 0 singletons, 0.992 sah overhead, 1.208531 radius), 624 triangles
+lod 4: 3 clusters (33.3% full, 104.0 tri/cl, 120.7 vtx/cl, 4.67 connected, 0.0 boundary, 3.0 partition, 0 singletons, 0.998 sah overhead, 1.208531 radius), 312 triangles
+lod 5: 2 clusters (0.0% full, 77.5 tri/cl, 96.5 vtx/cl, 4.00 connected, 0.0 boundary, 2.0 partition, 0 singletons, 0.992 sah overhead, 1.208531 radius), 155 triangles
+lod 6: 1 clusters (0.0% full, 71.0 tri/cl, 44.0 vtx/cl, 2.00 connected, 0.0 boundary, 1.0 partition, 1 singletons, 1.000 sah overhead, 1.208531 radius), 71 triangles
+lowest lod: 1 clusters, 71 triangles
+bvh cut (error 0.002): 3989 triangles

@@ -1,0 +1,54 @@
+# hexes.obj: 826 vertices, 576 triangles; read in 0.15 msec; indexed in 0.05 msec
+Optimize : ACMR 1.434028 ATVR 1.000000 (NV 1.035109 AMD 1.014528 Intel 1.000000) overfetch 1.000000 overdraw 1.131780 in 0.07 msec
+OptimizeF: ACMR 1.434028 ATVR 1.000000 (NV 1.035109 AMD 1.014528 Intel 1.000000) overfetch 1.000000 overdraw 1.131780 in 0.04 msec
+Stripify : ACMR 1.434028 ATVR 1.000000 (NV 1.031477 AMD 1.002421 Intel 1.000000); 0.0 run avg, 1413 strip indices (81.8%) in 0.03 msec
+StripifyR: ACMR 1.434028 ATVR 1.000000 (NV 1.031477 AMD 1.002421 Intel 1.000000); 7.1 run avg, 1164 strip indices (67.4%) in 0.02 msec
+StripifyS: ACMR 1.434028 ATVR 1.000000 (NV 1.031477 AMD 1.002421 Intel 1.000000); 7.1 run avg, 1164 strip indices (67.4%) in 0.02 msec
+MeshletsS: 14 meshlets (avg vertices 59.1, avg triangles 41.1, avg boundary 0.3, avg connected 9.00, not full 6) in 0.03 msec
+Bounds   : radius mean 10.054033 stddev 2.467892; 100.0% meshlets under 1σ; cone angle 90.0°; cone reject 0.0% trivial accept 100.0% in 0.05 msec
+Meshlets : 14 meshlets (avg vertices 59.8, avg triangles 41.1, avg boundary 1.6, avg connected 9.29, not full 7) in 0.24 msec
+Bounds   : radius mean 7.373084 stddev 2.874822; 71.4% meshlets under 1σ; cone angle 90.0°; cone reject 0.0% trivial accept 100.0% in 0.05 msec
+MeshletsU: 14 meshlets (avg vertices 59.8, avg triangles 41.1, avg boundary 1.6, avg connected 9.29, not full 14) in 0.20 msec
+Bounds   : radius mean 7.373084 stddev 2.874822; 71.4% meshlets under 1σ; cone angle 90.0°; cone reject 0.0% trivial accept 100.0% in 0.05 msec
+MeshletsF: 14 meshlets (avg vertices 59.8, avg triangles 41.1, avg boundary 1.6, avg connected 9.29, not full 7) in 0.18 msec
+Bounds   : radius mean 7.373084 stddev 2.874822; 71.4% meshlets under 1σ; cone angle 90.0°; cone reject 0.0% trivial accept 100.0% in 0.04 msec
+MeshletsX: 21 meshlets (avg vertices 41.1, avg triangles 27.4, avg boundary 3.6, avg connected 6.86, not full 21) in 0.14 msec
+Bounds   : radius mean 7.435398 stddev 2.349636; 76.2% meshlets under 1σ; cone angle 68.9°; cone reject 0.0% trivial accept 76.2% in 0.05 msec
+ShadowIB : ACMR 1.434028 (1.00x improvement); 826 shadow vertices (1.00x improvement) in 0.02 msec
+FilterIB : 576 triangles -> 576 (0.00% redundant) in 0.03 msec
+Tesselltn: 576 patches in 0.08 msec
+Adjacency: 576 patches in 0.08 msec
+Provoking: 576 triangles / 826 vertices (+0.0% extra) in 0.01 msec
+IdxCodec : 8.6 bits/triangle (post-deflate 1.3 bits/triangle); encode 0.02 msec (0.432 GB/s), decode 0.00 msec (1.62 GB/s)
+IdxCodecS: 8.5 bits/triangle (post-deflate 1.3 bits/triangle); encode 0.01 msec (0.556 GB/s), decode 0.00 msec (2.43 GB/s)
+IdxCodecD: 8.0 bits/index (post-deflate 0.5 bits/index); encode 0.00 msec (1.664 GB/s), decode 0.00 msec (2.22 GB/s)
+VtxPack  : 128.0 bits/vertex (post-deflate 56.4 bits/vertex)
+VtxCodec : 46.8 bits/vertex (post-deflate 23.1 bits/vertex); encode 0.05 msec (0.264 GB/s), decode 0.01 msec (1.33 GB/s)
+VtxCodecO: 46.8 bits/vertex (post-deflate 23.1 bits/vertex); encode 0.04 msec (0.250 GB/s), decode 0.01 msec (1.75 GB/s)
+MeshletCodec (64/96): 14 meshlets, 41 bytes/meshlet; 581 bytes, 8.1 bits/triangle
+MeshletCodec (64/96, packed): 44 bytes/meshlet, 8.7 bits/triangle; post-deflate: 18 bytes/meshlet, 3.6 bits/triangle)
+MeshletCodec (64/96, packed): decode time 0.001 msec, 0.559B tri/sec, 73.6 ns/meshlet
+MeshletCodecDXR (128@-11): 6 meshlets, 4446 bytes; 7.7 bytes/triangle (0.2 headers, 7.0 positions, 0.6 topology); post-deflate: 6.8 bytes/triangle
+MeshletCodecDXR (128): decode time 0.001 msec, 0.810B tri/sec, 8.089 GB/sec
+Simplify : 576 triangles => 563 triangles (0.90% deviation) in 0.15 msec
+Simplify : 576 triangles => 563 triangles (0.90% deviation) in 0.15 msec
+SimplifyAttr: 576 triangles => 563 triangles (0.90% deviation) in 0.20 msec
+SimplifyAttr: 576 triangles => 563 triangles (0.90% deviation) in 0.20 msec
+SimplifyUpdt: 576 triangles => 563 triangles (0.90% deviation) in 0.22 msec
+SimplifyUpdt: 576 triangles => 563 triangles (0.90% deviation) in 0.22 msec
+SimplifyS: 576 triangles => 190 triangles (0.64% deviation) in 0.05 msec
+SimplifyC: 576 triangles => 5 LOD levels down to 560 triangles in 0.47 msec, optimized in 0.26 msec
+           ACMR 1.434028...1.446429 Overfetch 1.000000..1.000000 Codec VB 52.9 bits/vertex IB 10.7 bits/triangle
+SimplifyP: 826 points => 159 points in 0.05 msec
+SimplifyG: 576 triangles => 576 triangles (0.00% deviation) in 0.10 msec, clusterized in 0.19 msec, partitioned in 0.03 msec (14 clusters in 2 groups, 7.0 avg)
+Spatial  : 58.0 bits/vertex (post-deflate 47.2 bits/vertex); sort 0.03 msec
+SpatialT : 49.8 bits/vertex (post-deflate 39.7 bits/vertex); 8.5 bits/triangle (post-deflate 2.5 bits/triangle); sort 0.02 msec
+SpatialCP: 50.9 bits/vertex (post-deflate 31.5 bits/vertex); sort 0.03 msec
+ReindexQ : 826 vertices => 826 unique vertices in 0.02 msec
+ReindexF : 826 vertices => 826 unique vertices in 0.02 msec
+Coverage : X 0.6% Y 0.7% Z 70.1% in 0.79 msec
+Tangents : 1728 corners, 155 splits in 0.10 msec
+Normals 2: 1728 corners, 998 vertices in 0.09 msec; reindexed in 0.05 msec
+Remesh128: 576 triangles => 46408 triangles in 13.38 msec (count 4.73 msec, compute 8.66 msec)
+Remesh128: 576 triangles => 46408 triangles in 12.79 msec (count 3.03 msec, compute 9.76 msec)
+Deintrlvd: 826 vertices, reindexed in 0.04 msec, optimized in 0.03 msec, generated & optimized shadow indices in 0.03 msec

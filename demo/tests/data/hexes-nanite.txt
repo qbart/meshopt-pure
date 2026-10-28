@@ -1,0 +1,8 @@
+# hexes.obj: 826 vertices, 576 triangles; read in 0.18 msec; indexed in 0.06 msec
+lod 0: 7 clusters (0.0% full, 82.3 tri/cl, 118.9 vtx/cl, 18.29 connected, 0.0 boundary, 7.0 partition, 0 singletons, 0.000 sah overhead, 10.400370 radius), 576 triangles
+lod 1: 5 clusters (0.0% full, 57.6 tri/cl, 108.2 vtx/cl, 25.00 connected, 0.0 boundary, 5.0 partition, 0 singletons, 0.000 sah overhead, 17.213633 radius), 288 triangles
+lod 2: 3 clusters (0.0% full, 48.0 tri/cl, 111.7 vtx/cl, 31.67 connected, 0.0 boundary, 3.0 partition, 0 singletons, 0.000 sah overhead, 17.213633 radius), 144 triangles
+lod 3: 2 clusters (0.0% full, 36.0 tri/cl, 81.0 vtx/cl, 22.50 connected, 0.0 boundary, 2.0 partition, 0 singletons, 0.000 sah overhead, 17.213633 radius), 72 triangles
+lod 4: 1 clusters (0.0% full, 36.0 tri/cl, 108.0 vtx/cl, 36.00 connected, 0.0 boundary, 1.0 partition, 1 singletons, 0.000 sah overhead, 17.213633 radius), 36 triangles
+lowest lod: 1 clusters, 36 triangles
+bvh cut (error 0.002): 576 triangles
