@@ -10,20 +10,24 @@ mod sealed {
     }
 
     impl Sealed for u16 {
+        #[inline]
         fn as_u32(_: &[Self]) -> Option<&[u32]> {
             None
         }
 
+        #[inline]
         fn as_u32_mut(_: &mut [Self]) -> Option<&mut [u32]> {
             None
         }
     }
 
     impl Sealed for u32 {
+        #[inline]
         fn as_u32(s: &[Self]) -> Option<&[u32]> {
             Some(s)
         }
 
+        #[inline]
         fn as_u32_mut(s: &mut [Self]) -> Option<&mut [u32]> {
             Some(s)
         }
@@ -43,10 +47,12 @@ pub trait IndexType: Copy + Default + sealed::Sealed {
 impl IndexType for u16 {
     const SIZE: usize = 2;
 
+    #[inline]
     fn from_u32(v: u32) -> Self {
         v as u16
     }
 
+    #[inline]
     fn to_u32(self) -> u32 {
         u32::from(self)
     }
@@ -55,10 +61,12 @@ impl IndexType for u16 {
 impl IndexType for u32 {
     const SIZE: usize = 4;
 
+    #[inline]
     fn from_u32(v: u32) -> Self {
         v
     }
 
+    #[inline]
     fn to_u32(self) -> u32 {
         self
     }
