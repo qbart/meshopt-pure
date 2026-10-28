@@ -291,6 +291,7 @@ TextureTransformTest.tu.glb | models/TextureTransformTest/TextureTransformTest.g
 TextureTransformTest.tc_tq10.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tc -tq 10 | glb
 TextureTransformTest.tu_tq1.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tu -tq 1 | glb
 TextureTransformTest.tc_tfy.gltf | models/TextureTransformTest/TextureTransformTest.gltf | -tc -tfy | gltf
+TextureTransformTest.tw.glb | models/TextureTransformTest/TextureTransformTest.gltf | -tw | glb
 TextureCoordinateTest.tc_ts0.25.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -tc -ts 0.25 | glb
 TextureCoordinateTest.tu_tl64_tp.glb | models/TextureCoordinateTest/TextureCoordinateTest.glb | -tu -tl 64 -tp | glb
 InterpolationTest.tc_tp_tl128.glb | models/InterpolationTest/InterpolationTest.glb | -tc -tp -tl 128 | glb
