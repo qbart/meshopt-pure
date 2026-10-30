@@ -696,24 +696,27 @@ pub fn encode_images_basis(encoded: &mut [Vec<u8>], data: &Data, images: &[Image
     };
 
     let next = std::sync::atomic::AtomicUsize::new(0);
+    let work = || {
+        let mut done = Vec::new();
+        loop {
+            let j = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            let Some((i, job)) = jobs.get(j) else {
+                break;
+            };
+            done.push((*i, encode(job)));
+        }
+        done
+    };
+
+    // the calling thread is one of the workers; it also drains the queue when spawning fails (e.g. no threads on WASI)
     let results: Vec<(usize, Vec<u8>)> = std::thread::scope(|s| {
-        let workers: Vec<_> = (0..num_threads.min(jobs.len()))
-            .map(|_| {
-                s.spawn(|| {
-                    let mut done = Vec::new();
-                    loop {
-                        let j = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                        let Some((i, job)) = jobs.get(j) else {
-                            break;
-                        };
-                        done.push((*i, encode(job)));
-                    }
-                    done
-                })
-            })
+        let workers: Vec<_> = (1..num_threads.min(jobs.len()))
+            .filter_map(|_| std::thread::Builder::new().spawn_scoped(s, work).ok())
             .collect();
 
-        workers.into_iter().flat_map(|w| w.join().unwrap_or_default()).collect()
+        let mut results = work();
+        results.extend(workers.into_iter().flat_map(|w| w.join().unwrap_or_default()));
+        results
     });
 
     for (i, result) in results {
