@@ -5,13 +5,14 @@ upstream commit `f0a684f` (v1.3). It is not affiliated with or endorsed by the m
 
 The Rust sources are translations of the C and C++ sources listed below and have been modified from the originals.
 All of them are MIT licensed (micro_ply and sdefl are MIT or public domain; MIT is used). The copyright notices and the
-license text are in [LICENSE.md](LICENSE.md); every published crate ships a copy.
+license text are in [LICENSE.md](LICENSE.md). Only `meshopt-pure` is published to crates.io (with LICENSE.md and this
+file); the other crates are internal to the repository.
 
 | Rust port | Translated from | Copyright | License |
 |---|---|---|---|
 | `src/` (crate `meshopt-pure`) | meshoptimizer `src/` | Arseny Kapoulkine | MIT |
-| `clusterlod/` | meshoptimizer `demo/clusterlod.h` | Arseny Kapoulkine | MIT |
-| `gltfpack/` (except below) | meshoptimizer `gltf/` | Arseny Kapoulkine | MIT |
+| `clusterlod/` (not published) | meshoptimizer `demo/clusterlod.h` | Arseny Kapoulkine | MIT |
+| `gltfpack/` (not published, except below) | meshoptimizer `gltf/` | Arseny Kapoulkine | MIT |
 | `gltfpack/src/cgltf` | cgltf 1.15 (`extern/cgltf.h`, with jsmn) | Johannes Kuhlmann | MIT |
 | `gltfpack/src/fast_obj.rs` | fast_obj 1.3 (`extern/fast_obj.h`) | Richard Knight | MIT |
 | `gltfpack/src/micro_ply.rs` | micro_ply (`extern/micro_ply.h`) | Nick Klingensmith | MIT / public domain |
@@ -23,7 +24,7 @@ KTX2 encoding is provided by the `ktx-rs` crate and Zstandard by `zstd-pure-rs`,
 
 ## Test data
 
-Test data is versioned in the repository but not part of the published crates:
+Test data is versioned in the repository but not part of the published crate:
 
 - `gltfpack/tests/data/models/*`: glTF sample models from
   [KhronosGroup/glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets), CC0-1.0 or CC-BY-4.0; see each

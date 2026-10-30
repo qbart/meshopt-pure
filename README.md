@@ -16,9 +16,9 @@ v1.3 (commit `f0a684f`).
   remeshing, opacity micromaps, vertex / index codecs and filters, quantization, analyzers.
 - SIMD decoders (feature `simd`, default): SSE2/SSSE3/SSE4.1 on x86-64, NEON on AArch64, simd128
   on WebAssembly. The CPU is detected at runtime, so no `target-cpu` flags are needed.
-- `gltfpack`: library and CLI, byte-identical output to C++ gltfpack, including KTX2 / BasisU
+- `gltfpack` (in this repository, not published): library and CLI, byte-identical output to C++ gltfpack, including KTX2 / BasisU
   texture compression (via [ktx-rs](https://crates.io/crates/ktx-rs)).
-- `clusterlod`: cluster LOD hierarchies (`demo/clusterlod.h`).
+- `clusterlod` (in this repository, not published): cluster LOD hierarchies (`demo/clusterlod.h`).
 - WebAssembly: everything builds for `wasm32-unknown-unknown` / `wasm32-wasip1`.
 
 Not ported: WebP texture output in gltfpack (`-tw`; it reports "built without WebP support", like
@@ -85,7 +85,7 @@ return `Result<T>` whose error is `meshoptimizer::Error`. The library never pani
 ## gltfpack
 
 ```sh
-cargo install gltfpack
+cargo install --path gltfpack
 gltfpack -i scene.gltf -o scene.glb -cc -tc
 gltfpack -h
 ```
@@ -109,7 +109,7 @@ make fuzz              # fuzz harnesses (make libfuzzer for coverage-guided runs
 make codecbench        # decoder throughput
 ```
 
-Test data is versioned in the repository but not part of the published crates.
+Test data is versioned in the repository but not part of the published crate.
 
 ## License
 MIT, like meshoptimizer. The Rust sources are translations of meshoptimizer (Arseny Kapoulkine),

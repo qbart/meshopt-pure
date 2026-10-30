@@ -49,9 +49,9 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
    (no gain measured). ⬜ Wasm vertex/index decode at 0.79x/0.70x of C++. gltfpack passes on Wasm with
    `ktx-rs` 4.4.3.
 6. ✅ demo (`demo/main.cpp`, `nanite.cpp`, `extern/sdefl.h`; spec 40): output identical to the C++ demo. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
-7. ✅ crates.io packaging: `meshopt-pure` (lib `meshoptimizer`), `gltfpack`, `clusterlod`, all 1.3.0 (versions follow
-   upstream), MSRV 1.88, MIT with all upstream notices (LICENSE.md, NOTICE.md), README; `cargo publish --workspace
-   --dry-run` passes. ⬜ Not published yet; needs the GitHub repository (`repository` points to `qbart/meshopt-pure`).
+7. ✅ crates.io packaging: only `meshopt-pure` (lib `meshoptimizer`) is published; `gltfpack`, `clusterlod`, demo,
+   tools and fuzz are internal (`publish = false`). 1.3.0 (versions follow upstream), MSRV 1.88, MIT with all
+   upstream notices (LICENSE.md, NOTICE.md), README; `cargo publish --dry-run` passes. ⬜ Not published yet.
 
 ## Tools
 
