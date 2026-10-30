@@ -116,19 +116,12 @@ fn golden_outputs_match_reference() {
 
     let tmp = Path::new(env!("CARGO_TARGET_TMPDIR")).join("gltfpack-golden");
 
-    let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
-    let chunk = cases.len().div_ceil(threads);
-
-    let failures: Vec<String> = std::thread::scope(|s| {
-        let handles: Vec<_> = cases
-            .chunks(chunk)
-            .map(|part| s.spawn(|| part.iter().filter_map(|c| run_case(c, &tmp)).collect::<Vec<_>>()))
-            .collect();
-        handles
-            .into_iter()
-            .flat_map(|h| h.join().unwrap_or_else(|_| vec!["worker panicked".to_string()]))
-            .collect()
-    });
+    let failures = if cfg!(target_family = "wasm") {
+        // no threads on WASI
+        cases.iter().filter_map(|c| run_case(c, &tmp)).collect()
+    } else {
+        run_parallel(&cases, &tmp)
+    };
 
     assert!(
         failures.is_empty(),
@@ -137,4 +130,20 @@ fn golden_outputs_match_reference() {
         cases.len(),
         failures.join("\n")
     );
+}
+
+fn run_parallel(cases: &[Case], tmp: &Path) -> Vec<String> {
+    let threads = std::thread::available_parallelism().map_or(4, |n| n.get());
+    let chunk = cases.len().div_ceil(threads);
+
+    std::thread::scope(|s| {
+        let handles: Vec<_> = cases
+            .chunks(chunk)
+            .map(|part| s.spawn(|| part.iter().filter_map(|c| run_case(c, tmp)).collect::<Vec<_>>()))
+            .collect();
+        handles
+            .into_iter()
+            .flat_map(|h| h.join().unwrap_or_else(|_| vec!["worker panicked".to_string()]))
+            .collect()
+    })
 }
