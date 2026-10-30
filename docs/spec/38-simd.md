@@ -74,10 +74,9 @@ lane extracts.
   hashes, and the NEON-vs-scalar differential tests), and the scalar build passes too. 2M codec fuzz inputs, no
   failures.
 - Wasm under wasmtime (`make cross-setup`, `make test-wasm`, `make fuzz-wasm`, see `scripts/setup-cross-wasm.sh`):
-  `wasm32-wasip1`, with the repository and `ref/cross/wasi-tmp` mapped into the sandbox. All 33 test binaries pass with
-  simd128 and in the scalar build, and 4M codec fuzz inputs found no failures. gltfpack can't be tested on Wasm
-  because its `ktx-rs` dependency doesn't compile for 32-bit targets (`const MAX_ALLOC: usize = 1 << 32` in
-  `tinyexr/load.rs`).
+  `wasm32-wasip1`, with the repository and `ref/cross/wasi-tmp` mapped into the sandbox. All workspace test binaries pass with
+  simd128 and in the scalar build (gltfpack with `ktx-rs` 4.4.3, the 306 golden cases run serially), and 4M codec fuzz
+  inputs found no failures. The demo CLI tests spawn the binary, so they are native/qemu only (`DEMO_RUNNER`).
 - Wasm speed (wasmtime 26, GB/s; vtx / idx / mlet / mletΔ / oct8 / oct12 / quat12 / col8 / col12 / exp):
   C++ simd128 4.33 / 5.47 / 1.22 / 0.94 / 3.94 / 7.64 / 8.38 / 5.24 / 9.63 / 28.12;
   Rust simd128 3.40 / 3.81 / 1.03 / 0.97 / 3.93 / 7.67 / 8.51 / 5.24 / 9.65 / 28.25.

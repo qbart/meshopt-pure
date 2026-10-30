@@ -46,8 +46,8 @@ Not applicable C tests: `customAllocator`, `customAllocatorCache` (allocator API
 4. ✅ codec tools: `codecbench` (spec 37), `codectest` (spec 39).
 5. ✅ SIMD decoders (x86-64 SSE2/SSSE3/SSE4.1, AArch64 NEON, Wasm simd128; default `simd` feature; spec 38).
    NEON verified under qemu (`make test-aarch64`), Wasm under wasmtime (`make test-wasm`). AVX-512 vertex path skipped
-   (no gain measured). ⬜ Wasm vertex/index decode at 0.79x/0.70x of C++. ❓ gltfpack on Wasm needs a 32-bit fix in
-   `ktx-rs` (`MAX_ALLOC = 1 << 32`).
+   (no gain measured). ⬜ Wasm vertex/index decode at 0.79x/0.70x of C++. gltfpack passes on Wasm with
+   `ktx-rs` 4.4.3.
 6. ✅ demo (`demo/main.cpp`, `nanite.cpp`, `extern/sdefl.h`; spec 40): output identical to the C++ demo. Not planned: `vcachetuner`/`vcachetester`, `js/` wasm wrappers, `wasmstubs`.
 
 ## Tools

@@ -27,7 +27,8 @@ forced from the source file decision (`force_alpha` / `check_for_alpha = false`)
 - Images that are not PNG/JPEG are left as is; errors: `error reading source file`, `error parsing image header`,
   `error decoding source image`, `error encoding image`. No temporary files (C++ writes/reads them).
 - `basis_parallel_compress`: images are spread over `-tj` (or available parallelism) threads, every compressor
-  uses a single threaded job pool, so the output does not depend on the thread count.
+  uses a single threaded job pool, so the output does not depend on the thread count. The calling thread is one
+  of the workers and drains the queue alone when threads can't be spawned (WASI).
 
 ## Divergences
 - basisu reads PNGs with `pv_png`, the port with lodepng; outputs agree on the tested formats (all color types,

@@ -35,7 +35,8 @@ Workspace crate `demo/` (`meshoptimizer-demo`, not published), binary `demo [-d|
   positions-only noisy sphere, a hexagon n-gon grid with degenerate faces, and a 200k-triangle terrain. Modes:
   default, `-n`, `-d`, `CLRT`, `DUMP=1`, `DUMP=-1` (1.4 MB of OBJ on stderr), a missing file, and multiple files.
 - `demo/tests/demo.rs`: the binary vs raw C++ output (`tests/data/*.txt`, timings masked) for pirate.obj and a small
-  n-gon mesh (`tests/data/hexes.obj`) in default, `-n`, `-n` + `CLRT` and `-d` modes.
+  n-gon mesh (`tests/data/hexes.obj`) in default, `-n`, `-n` + `CLRT` and `-d` modes. Native and aarch64 (the binary
+  runs via `DEMO_RUNNER`, qemu); not built for Wasm (no process spawning on WASI).
 - sdefl, out of repo: byte-identical to C at all 9 levels, for `sdeflate` and `zsdeflate`. Inputs: 366 files
   (window/block edges, up to 9 MB random, runs, alphabets, text, pirate.obj, gltfpack test data) and 400 fuzz-style
   files. Every output inflates back to its input (miniz_oxide, Python zlib). The C oracle runs clean under ASan/UBSan.
