@@ -32,8 +32,8 @@ dependencies = [
 
 [[package]]
 name = "ktx-rs"
-version = "4.4.2"
-source = "git+https://github.com/qbart/ktx-rs#f91c89de36426708c507f6fad29a09dce3b23d19"
+version = "4.4.3"
+source = "git+https://github.com/qbart/ktx-rs#35540a79313ce5eeaa8edcce09338d330d021c68"
 dependencies = [
  "bytemuck",
  "ktx-rs-macros",
@@ -44,8 +44,8 @@ dependencies = [
 
 [[package]]
 name = "ktx-rs-macros"
-version = "4.4.2"
-source = "git+https://github.com/qbart/ktx-rs#f91c89de36426708c507f6fad29a09dce3b23d19"
+version = "4.4.3"
+source = "git+https://github.com/qbart/ktx-rs#35540a79313ce5eeaa8edcce09338d330d021c68"
 
 [[package]]
 name = "meshoptimizer"
