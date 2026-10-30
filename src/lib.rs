@@ -4,6 +4,11 @@
 /// Library version (`MESHOPTIMIZER_VERSION`): major * 1000 + minor * 10.
 pub const MESHOPTIMIZER_VERSION: i32 = 1030;
 
+// compiles and runs the README example
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+struct ReadmeDoctests;
+
 mod clusterizer;
 mod error;
 mod hash;
