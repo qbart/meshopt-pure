@@ -1,5 +1,8 @@
 //! Demo output checked against the C++ demo (`demo/main.cpp` + `nanite.cpp`, built out of repo): the golden files in
 //! `tests/data/*.txt` are its raw output, compared after masking timings (msec, GB/s, tri/sec, ns/meshlet).
+//! Not built for Wasm: the tests spawn the demo binary, which WASI can't do. `DEMO_RUNNER` (e.g. qemu) runs it when cross
+//! testing.
+#![cfg(not(target_family = "wasm"))]
 
 use std::path::Path;
 use std::process::Command;
@@ -35,7 +38,17 @@ fn mask(text: &str) -> String {
 }
 
 fn run(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> Result<String, String> {
-    let output = Command::new(env!("CARGO_BIN_EXE_demo"))
+    let exe = env!("CARGO_BIN_EXE_demo");
+    let mut command = match std::env::var("DEMO_RUNNER") {
+        Ok(runner) => {
+            let mut command = Command::new(runner);
+            command.arg(exe);
+            command
+        }
+        Err(_) => Command::new(exe),
+    };
+
+    let output = command
         .args(args)
         .current_dir(dir)
         .env_remove("CLRT")

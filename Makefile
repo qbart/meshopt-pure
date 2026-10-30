@@ -5,10 +5,11 @@ CROSS := $(CURDIR)/ref/cross
 AARCH64 := aarch64-unknown-linux-musl
 AARCH64_ENV := CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=$(CROSS)/zig-cc-aarch64 \
 	CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUNNER=$(CROSS)/qemu/usr/bin/qemu-aarch64-static \
-	CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-C link-self-contained=no"
+	CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS="-C link-self-contained=no" \
+	DEMO_RUNNER=$(CROSS)/qemu/usr/bin/qemu-aarch64-static
 
 # Wasm testing under wasmtime (scripts/setup-cross-wasm.sh); the repository and ref/cross/wasi-tmp (as /tmp) are mapped
-# into the sandbox. gltfpack is excluded: its ktx-rs dependency doesn't build for 32-bit targets.
+# into the sandbox. Tests run serially (no threads on WASI).
 WASM := wasm32-wasip1
 WASM_RUNNER := $(CROSS)/wasmtime-v26.0.1-x86_64-linux/wasmtime run --dir $(CURDIR)::$(CURDIR) --dir $(CROSS)/wasi-tmp::/tmp --
 WASM_ENV := CARGO_TARGET_WASM32_WASIP1_RUNNER="$(WASM_RUNNER)"
@@ -75,8 +76,8 @@ fuzz-aarch64:
 
 # simd128 paths, then the scalar build
 test-wasm:
-	$(WASM_ENV) $(WASM_SIMD) cargo test --workspace --exclude gltfpack --release --target $(WASM)
-	$(WASM_ENV) cargo test --workspace --exclude gltfpack --release --target $(WASM)
+	$(WASM_ENV) $(WASM_SIMD) cargo test --workspace --release --target $(WASM)
+	$(WASM_ENV) cargo test --workspace --release --target $(WASM)
 
 fuzz-wasm:
 	$(WASM_ENV) $(WASM_SIMD) cargo run -p meshoptimizer-fuzz --release --target $(WASM) --bin fuzz -- codec $(ITERATIONS) $(SEED)
