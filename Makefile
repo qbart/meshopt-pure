@@ -27,7 +27,7 @@ FUZZ_TIME ?= 600
 FUZZ_MAX_LEN ?= 8192
 
 .PHONY: demo codecbench codecbench-scalar codectest cross-setup test-aarch64 fuzz-aarch64 test-wasm fuzz-wasm fuzz $(addprefix fuzz-,$(FUZZ_TARGETS)) fuzz-replay \
-	libfuzzer $(addprefix libfuzzer-,$(FUZZ_TARGETS)) fuzz-setup
+	libfuzzer $(addprefix libfuzzer-,$(FUZZ_TARGETS)) fuzz-setup publish-check publish
 
 fuzz: $(addprefix fuzz-,$(FUZZ_TARGETS))
 
@@ -81,3 +81,11 @@ test-wasm:
 
 fuzz-wasm:
 	$(WASM_ENV) $(WASM_SIMD) cargo run -p meshoptimizer-fuzz --release --target $(WASM) --bin fuzz -- codec $(ITERATIONS) $(SEED)
+
+# crates.io: only meshopt-pure is published (the other crates are internal); needs `cargo login` and a clean tree
+publish-check:
+	cargo test --workspace --release
+	cargo publish -p meshopt-pure --dry-run
+
+publish: publish-check
+	cargo publish -p meshopt-pure
