@@ -44,18 +44,19 @@ pub fn f2u8(f: f32) -> u8 {
     f2i32(f) as u8
 }
 
-/// `size_t(d)` for a double (GCC x86-64 sequence: values >= 2^63 are offset, NaN gives 2^63).
+/// `size_t(d)` for a double (GCC x86-64 sequence: values >= 2^63 are offset, NaN gives 2^63); truncated on 32-bit targets.
 pub fn d2usize(d: f64) -> usize {
     const TWO63: f64 = 9_223_372_036_854_775_808.0;
-    if d.is_nan() {
-        return 1 << 63;
-    }
-    if d < TWO63 {
-        if d >= -TWO63 { d as i64 as usize } else { 1 << 63 }
+    const HIGH: u64 = 1 << 63;
+    let r = if d.is_nan() {
+        HIGH
+    } else if d < TWO63 {
+        if d >= -TWO63 { d as i64 as u64 } else { HIGH }
     } else {
         let v = d - TWO63;
-        if v < TWO63 { (v as i64 as usize) ^ (1 << 63) } else { 1 << 63 }
-    }
+        if v < TWO63 { (v as i64 as u64) ^ HIGH } else { HIGH }
+    };
+    r as usize
 }
 
 const S_THRESHOLD: usize = 16;
@@ -248,6 +249,6 @@ mod tests {
         assert_eq!(fmin(1.0, f32::NAN), 1.0);
         assert!(fmax(f32::NAN, 1.0).is_nan());
         assert_eq!(fmax(1.0, f32::NAN), 1.0);
-        assert_eq!(d2usize(1e19), 10_000_000_000_000_000_000);
+        assert_eq!(d2usize(1e19), 10_000_000_000_000_000_000u64 as usize);
     }
 }
