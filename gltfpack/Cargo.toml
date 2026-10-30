@@ -1,15 +1,13 @@
 [package]
 name = "gltfpack"
 description = "Pure Rust port of gltfpack (meshoptimizer's glTF optimizer): library and CLI"
-keywords = ["gltf", "mesh", "optimization", "compression", "ktx2"]
-categories = ["graphics", "game-development", "command-line-utilities", "compression"]
-readme = "../README.md"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-include = ["/src/**", "/Cargo.toml", "/LICENSE.md"]
+# internal: not published to crates.io
+publish = false
 
 [lib]
 name = "gltfpack"

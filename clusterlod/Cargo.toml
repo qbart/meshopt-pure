@@ -1,15 +1,13 @@
 [package]
 name = "clusterlod"
 description = "Pure Rust port of clusterlod: cluster LOD hierarchies on top of meshoptimizer (demo/clusterlod.h)"
-keywords = ["mesh", "meshlet", "lod", "nanite", "gpu"]
-categories = ["graphics", "game-development", "rendering"]
-readme = "../README.md"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-include = ["/src/**", "/Cargo.toml", "/LICENSE.md"]
+# internal: not published to crates.io
+publish = false
 
 [dependencies]
 meshoptimizer = { workspace = true, features = ["simd"] }

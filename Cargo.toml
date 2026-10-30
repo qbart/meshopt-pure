@@ -42,8 +42,8 @@ repository = "https://github.com/qbart/meshopt-pure"
 
 [workspace.dependencies]
 meshoptimizer = { package = "meshopt-pure", path = ".", version = "1.3.0", default-features = false }
-clusterlod = { path = "clusterlod", version = "1.3.0" }
-gltfpack = { path = "gltfpack", version = "1.3.0" }
+clusterlod = { path = "clusterlod" }
+gltfpack = { path = "gltfpack" }
 
 [workspace.lints.rust]
 unsafe_code = "deny"
