@@ -13,7 +13,7 @@ fn main() -> ExitCode {
 
     let (run, paths): (Run, &[String]) = match args.first().map(String::as_str) {
         None => {
-            println!("Usage: demo [-d|-n] files...; the C++ demo tests (demo/tests.cpp) run with `cargo test -p meshoptimizer`");
+            println!("Usage: demo [-d|-n] files...; the C++ demo tests (demo/tests.cpp) run with `cargo test -p meshopt-pure`");
             return ExitCode::SUCCESS;
         }
         Some("-d") => (process_dev, &args[1..]),
