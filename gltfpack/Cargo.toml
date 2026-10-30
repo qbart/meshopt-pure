@@ -1,9 +1,15 @@
 [package]
 name = "gltfpack"
-version = "0.1.0"
-edition = "2024"
-license = "MIT"
-description = "Pure Rust port of gltfpack (https://github.com/zeux/meshoptimizer/tree/master/gltf)"
+description = "Pure Rust port of gltfpack (meshoptimizer's glTF optimizer): library and CLI"
+keywords = ["gltf", "mesh", "optimization", "compression", "ktx2"]
+categories = ["graphics", "game-development", "command-line-utilities", "compression"]
+readme = "../README.md"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+include = ["/src/**", "/Cargo.toml", "/LICENSE.md"]
 
 [lib]
 name = "gltfpack"
@@ -14,8 +20,8 @@ name = "gltfpack"
 path = "src/main.rs"
 
 [dependencies]
-meshoptimizer = { path = ".." }
-ktx = { package = "ktx-rs", git = "https://github.com/qbart/ktx-rs", default-features = false }
+meshoptimizer = { workspace = true, features = ["simd"] }
+ktx = { package = "ktx-rs", version = "4.4.3", default-features = false }
 zstd-pure-rs = "0.2.0"
 
 [lints]

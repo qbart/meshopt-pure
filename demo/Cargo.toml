@@ -1,15 +1,17 @@
 [package]
 name = "meshoptimizer-demo"
-version = "0.1.0"
-edition = "2024"
-license = "MIT"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 publish = false
 description = "Port of meshoptimizer demo/ (main.cpp statistics, nanite.cpp) with sdefl"
 
 [dependencies]
-meshoptimizer = { path = ".." }
-clusterlod = { path = "../clusterlod" }
-gltfpack = { path = "../gltfpack" }
+meshoptimizer = { workspace = true, features = ["simd"] }
+clusterlod.workspace = true
+gltfpack.workspace = true
 
 [lints]
 workspace = true

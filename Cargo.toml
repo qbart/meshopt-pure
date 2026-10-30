@@ -1,9 +1,20 @@
 [package]
+name = "meshopt-pure"
+description = "Pure Rust port of meshoptimizer: mesh optimization, simplification, clustering and compression"
+keywords = ["mesh", "meshlet", "simplification", "compression", "gpu"]
+categories = ["graphics", "game-development", "rendering", "compression"]
+readme = "README.md"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+# The published crate leaves out tests and test data (see NOTICE.md).
+include = ["/src/**", "/Cargo.toml", "/LICENSE.md", "/NOTICE.md", "/README.md"]
+
+[lib]
+# imported as `meshoptimizer`, like the C++ library
 name = "meshoptimizer"
-version = "0.1.0"
-edition = "2024"
-license = "MIT"
-description = "Pure Rust port of meshoptimizer (https://github.com/zeux/meshoptimizer)"
 
 [features]
 default = ["simd"]
@@ -20,6 +31,19 @@ workspace = true
 [workspace]
 members = ["gltfpack", "clusterlod", "fuzz", "tools", "demo"]
 exclude = ["fuzz/libfuzzer"]
+
+# versions follow upstream meshoptimizer
+[workspace.package]
+version = "1.3.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+repository = "https://github.com/qbart/meshopt-pure"
+
+[workspace.dependencies]
+meshoptimizer = { package = "meshopt-pure", path = ".", version = "1.3.0", default-features = false }
+clusterlod = { path = "clusterlod", version = "1.3.0" }
+gltfpack = { path = "gltfpack", version = "1.3.0" }
 
 [workspace.lints.rust]
 unsafe_code = "deny"

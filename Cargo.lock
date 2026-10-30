@@ -16,24 +16,25 @@ checksum = "95832e849adfb21180ccb6826a99da14e5d266ae5c2e668e1602cf234f153797"
 
 [[package]]
 name = "clusterlod"
-version = "0.1.0"
+version = "1.3.0"
 dependencies = [
- "meshoptimizer",
+ "meshopt-pure",
 ]
 
 [[package]]
 name = "gltfpack"
-version = "0.1.0"
+version = "1.3.0"
 dependencies = [
  "ktx-rs",
- "meshoptimizer",
+ "meshopt-pure",
  "zstd-pure-rs",
 ]
 
 [[package]]
 name = "ktx-rs"
 version = "4.4.3"
-source = "git+https://github.com/qbart/ktx-rs#35540a79313ce5eeaa8edcce09338d330d021c68"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b795b80ee108a09b1258de666c35d2fc15c0a9a9d990b210b97a1e6a548ebc2"
 dependencies = [
  "bytemuck",
  "ktx-rs-macros",
@@ -45,33 +46,34 @@ dependencies = [
 [[package]]
 name = "ktx-rs-macros"
 version = "4.4.3"
-source = "git+https://github.com/qbart/ktx-rs#35540a79313ce5eeaa8edcce09338d330d021c68"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41a0107729f8fc147359095e4b9c44dccabb276f9b8e354fee2bd386eb3e7fc7"
 
 [[package]]
-name = "meshoptimizer"
-version = "0.1.0"
+name = "meshopt-pure"
+version = "1.3.0"
 
 [[package]]
 name = "meshoptimizer-demo"
-version = "0.1.0"
+version = "1.3.0"
 dependencies = [
  "clusterlod",
  "gltfpack",
- "meshoptimizer",
+ "meshopt-pure",
 ]
 
 [[package]]
 name = "meshoptimizer-fuzz"
-version = "0.1.0"
+version = "1.3.0"
 dependencies = [
- "meshoptimizer",
+ "meshopt-pure",
 ]
 
 [[package]]
 name = "meshoptimizer-tools"
-version = "0.1.0"
+version = "1.3.0"
 dependencies = [
- "meshoptimizer",
+ "meshopt-pure",
 ]
 
 [[package]]
