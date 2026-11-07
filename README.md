@@ -1,5 +1,7 @@
 # meshopt-pure (Rust port of meshoptimizer)
 
+![Meshlets of the glTF Fox sample model](docs/output.png)
+
 An **unofficial pure Rust port** of [meshoptimizer](https://github.com/zeux/meshoptimizer): the mesh
 optimization library and its companion projects gltfpack and clusterlod. It is not affiliated with or
 endorsed by the meshoptimizer authors.
